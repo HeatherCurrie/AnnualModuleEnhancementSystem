@@ -2,10 +2,11 @@
     background-color: #4365e2;
 }
 
-.navbar-light .navbar-brand {
-    color: white;
-}
+a:hover {
+    color: black !important;
+} 
 
-.whiteText {
-    color: white;
+.tableHeader {
+    margin-top: 1rem;
+    margin-left: 5rem;
 }

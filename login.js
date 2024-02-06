@@ -1,9 +1,9 @@
 // SHOW PASSWORD FUNCTIONALITY
 function passwordVisibility() {
-    var x = document.getElementById("password");
-    if (x.type === "password") {
-      x.type = "text";
+    var visibility = document.getElementById("password");
+    if (visibility.type === "password") {
+      visibility.type = "text";
     } else {
-      x.type = "password";
+      visibility.type = "password";
     }
   }
