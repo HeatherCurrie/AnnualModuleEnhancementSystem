@@ -6,6 +6,10 @@ a:hover {
     color: black !important;
 } 
 
+button:hover {
+    background-color: darkblue;
+} 
+
 .tableHeader {
     margin-top: 1rem;
     margin-left: 5rem;
