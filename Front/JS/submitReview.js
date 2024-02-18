@@ -14,7 +14,7 @@ function submitReview() {
     let futureChangesVal = document.getElementById("futureChanges").value;
     let otherVal = document.getElementById("other").value;
     let authorVal = document.getElementById("author").value;
-    let dateVal = document.getElementById("futureChanges").date;
+    let dateVal = document.getElementById("date").value;
 
     const data = {
         moduleDetails: moduleDetailsVal,
@@ -35,7 +35,7 @@ function submitReview() {
     // ADD VALIDATION IN FUTURE
 
     // Send the data to the server using Fetch API
-    fetch('submit-review-endpoint', { 
+    fetch('http://127.0.0.1:5000/submit-review-endpoint', { 
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -44,12 +44,12 @@ function submitReview() {
     })
     .then(response => {
         if (!response.ok) {
-            throw new Error('Network response was not ok ' + response.statusText);
+            throw new Error('Network response was not ok: ' + response.statusText);
         }
-        return response.json();
+        return response.json(); 
     })
     .then(data => {
-        console.log('Success:', data);
+        console.log('Success:', data); 
     })
     .catch((error) => {
         console.error('Error:', error);

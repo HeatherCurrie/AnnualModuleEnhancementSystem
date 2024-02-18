@@ -22,7 +22,7 @@
 
     <!--FORM-->
     <div class="container-fluid mt-4" style="width:85%;">
-        <form action="/submitReview" method="post">
+        <form>
             <div class="mb-3">
                 <label class="form-label">Module Details:</label>
                 <input type="text" class="form-control" id="moduleDetails" required>
@@ -85,7 +85,7 @@
                 <label class="form-label">Date:</label>
                 <input type="date" class="form-control" id="date" required>
             </div>
-            <button onclick="scheduleReview()" id="reviewButton" class="btn text-white dundeeBlue mb-4">Submit</button>
+            <button type="button" onclick="submitReview()" id="reviewButton" class="btn text-white dundeeBlue mb-4">Submit</button>
         </form>
     </div>
 </body>
