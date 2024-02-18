@@ -1,3 +1,15 @@
+/*MAKE PAGE ENTIRE SCREEN HEIGHT*/
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  min-height: 100vh;
+}
+
+
 .dundeeBlue {
     background-color: #4365e2;
 }
@@ -10,7 +22,38 @@ button:hover {
     background-color: darkblue;
 } 
 
-.tableHeader {
-    margin-top: 1rem;
-    margin-left: 5rem;
+/* LOGIN */
+.background {
+    background-color: #f0f4f8;
+}
+
+.containerLogin {
+    width: 95%; /* Almost full width on small devices */
+}
+  
+/* Medium devices (tablets, 768px and up) */
+@media (min-width: 768px) {
+    .containerLogin {
+        width: 750px; /* Fixed width for medium screens */
+    }
+}
+  
+/* Large devices (desktops, 992px and up) */
+@media (min-width: 992px) {
+    .containerLogin {
+        width: 970px; /* Fixed width for large screens */
+    }
+}
+  
+/* Extra large devices (large desktops, 1200px and up) */
+@media (min-width: 1200px) {
+    .containerLogin {
+        width: 50%; /* Fixed width for extra large screens */
+    }
+}
+
+/* MODULE REVIEW */
+
+.submitButton:hover {
+    background-color: darkgreen !important;
 }
