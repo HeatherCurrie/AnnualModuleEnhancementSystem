@@ -11,7 +11,7 @@
   <!--NAVBAR-->
     <nav class="navbar navbar-expand-lg navbar-light dundeeBlue">
         <div class="container-fluid">
-            <a class="nav-link navbar-brand text-white" href="lecturerDashboard.html">Review System</a>
+            <a class="nav-link navbar-brand text-white" href="lecturerDashboard.html">Review System - Lecturer</a>
             <ul class="navbar-nav ms-auto"> 
                 <li class="nav-item">
                     <a class="nav-link navbar-brand text-white" href="login.html">Log Out</a>
@@ -47,31 +47,31 @@
             </div>
             <div class="mb-3">
                 <label class="form-label">Module Leader/Organiser:</label>
-                <input type="text" class="form-control" id="moduleLead" required>
+                <input type="text" class="form-control" id="moduleLead">
             </div>
             <div class="mb-3">
                 <label class="form-label">Student numbers, Achievement and Progression:</label>
-                <textarea class="form-control" id="studentInfo" rows="3" required></textarea>
+                <textarea class="form-control" id="studentInfo" rows="3"></textarea>
             </div>
             <div class="mb-3">
                 <label class="form-label">Evaluation of the Operation of the Module:</label>
-                <textarea class="form-control" id="moduleEval" rows="3" required></textarea>
+                <textarea class="form-control" id="moduleEval" rows="3"></textarea>
             </div>
             <div class="mb-3">
                 <label class="form-label">Evaluation of Approach to Teaching, Assessment and Feedback:</label>
-                <textarea class="form-control" id="teachingEval" rows="3" required></textarea>
+                <textarea class="form-control" id="teachingEval" rows="3"></textarea>
             </div>
             <div class="mb-3">
                 <label class="form-label">Inclusive Nature:</label>
-                <input type="text" class="form-control" id="inclusiveNature" required>
+                <input type="text" class="form-control" id="inclusiveNature">
             </div>
             <div class="mb-3">
                 <label class="form-label">Past Changes:</label>
-                <textarea class="form-control" id="pastChanges" rows="3" required></textarea>
+                <textarea class="form-control" id="pastChanges" rows="3"></textarea>
             </div>
             <div class="mb-3">
                 <label class="form-label">Future Changes:</label>
-                <textarea class="form-control" id="futureChanges" rows="3" required></textarea>
+                <textarea class="form-control" id="futureChanges" rows="3"></textarea>
             </div>
             <div class="mb-3">
                 <label class="form-label">Other:</label>
@@ -85,8 +85,7 @@
                 <label class="form-label">Date:</label>
                 <input type="date" class="form-control" id="date" required>
             </div>
-            <button type="submit" class="btn text-white btn-success submitButton mb-4">Submit</button>
-            <button type="" class="btn text-white dundeeBlue mb-4">Save</button>
+            <button type="button" onclick="submitReview()" id="reviewButton" class="btn text-white dundeeBlue mb-4">Submit</button>
         </form>
     </div>
 </body>
