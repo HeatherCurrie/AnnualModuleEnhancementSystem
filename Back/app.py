@@ -26,7 +26,7 @@ db = SQLAlchemy(app)
 def submit_review():
     data = request.get_json()
     UserID = 1
-    Completed = "Completed"
+    Completed = "To-Complete"
     ModuleID = 1
 
     try:
@@ -58,7 +58,7 @@ def get_reviews():
     try:
         # Join Feedback with ModuleFeedback, then ModuleFeedback with Module
         all_reviews = text("""
-            SELECT mo.ModuleName, f.Deadline
+            SELECT mo.ModuleName, f.Deadline, f.Completed
             FROM Feedback f
             JOIN ModuleFeedback mf ON f.FeedbackID = mf.FeedbackID
             JOIN Module mo ON mf.ModuleID = mo.ModuleID
@@ -67,7 +67,7 @@ def get_reviews():
         result = db.session.execute(all_reviews, {'UserID': UserID}).mappings().all()
 
         # Explicitly converting each row to a dictionary
-        all_reviews = [{'moduleName': row['ModuleName'], 'deadline': row['Deadline']} for row in result]
+        all_reviews = [{'moduleName': row['ModuleName'], 'deadline': row['Deadline'], 'completed': row['Completed']} for row in result]
 
         return jsonify(all_reviews)
 
