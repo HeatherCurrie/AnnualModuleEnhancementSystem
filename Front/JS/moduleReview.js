@@ -2,7 +2,6 @@ function submitReview() {
     document.getElementById("reviewButton")
 
     // Setting all form values
-    let moduleDetailsVal = document.getElementById("moduleDetails").value;
     let academicYearVal = document.getElementById("academicYear").value;
     let schoolVal = document.getElementById("school").value;
     let moduleLeadVal = document.getElementById("moduleLead").value;
@@ -17,7 +16,6 @@ function submitReview() {
     let dateVal = document.getElementById("date").value;
 
     const data = {
-        moduleDetails: moduleDetailsVal,
         academicYear: academicYearVal,
         school: schoolVal,
         moduleLead: moduleLeadVal,

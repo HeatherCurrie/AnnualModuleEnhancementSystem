@@ -21,7 +21,7 @@ function fetchAndDisplayReviews() {
                 console.log(formattedDeadline)
                 const reviewElement = document.createElement('div');
                 reviewElement.innerHTML = `
-                    <h3>Module: ${review.school}</h3>
+                    <h3>Module: ${review.moduleName}</h3>
                     <p>Deadline: ${formattedDeadline}</p>
                 `;
                 container.appendChild(reviewElement);
