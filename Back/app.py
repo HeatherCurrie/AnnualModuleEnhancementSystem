@@ -27,11 +27,20 @@ def submit_review():
     data = request.get_json()
     UserID = 1
     Completed = "Completed"
+    ModuleID = 1
 
     try:
         # Insert into Feedback - MUST CHANGE USERID AND COMPLETED IN FUTURE
         postReview = db.session.execute(text("""INSERT INTO feedback (UserID, AcademicYear, School, Other, Date, Completed, Author)
                                         VALUES (:UserID, :AcademicYear, :School, :Other, :Date, :Completed, :Author)"""), {"UserID": UserID, "AcademicYear": data['academicYear'], "School": data['school'], "Other": data['other'], "Date": data['date'], "Completed": Completed, "Author": data['author']})
+
+        FeedbackID = db.session.execute(text("SELECT LAST_INSERT_ID()")).fetchone()[0]
+
+        # Now insert into ModuleFeedback
+        module_feedback_insert = text("""INSERT INTO ModuleFeedback (FeedbackID, ModuleID, ModuleLead, ModuleDetails, StudentInfo, ModuleEval, InclusiveNature, PastChanges, FutureChanges)
+                                         VALUES (:FeedbackID, :ModuleID, :ModuleLead, :ModuleDetails, :StudentInfo, :ModuleEval, :InclusiveNature, :PastChanges, :FutureChanges)""")
+        db.session.execute(module_feedback_insert, {"FeedbackID": FeedbackID, "ModuleID": ModuleID, "ModuleLead": data['moduleLead'], "ModuleDetails": data['moduleDetails'], "StudentInfo": data['studentInfo'], "ModuleEval": data['moduleEval'], "InclusiveNature": data['inclusiveNature'], "PastChanges": data['pastChanges'], "FutureChanges": data['futureChanges']})
+
         db.session.commit()
         return jsonify({'result': 'success'}), 200
 
