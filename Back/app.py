@@ -38,9 +38,9 @@ def submit_review():
         FeedbackID = db.session.execute(text("SELECT LAST_INSERT_ID()")).fetchone()[0]
 
         # Insert into ModuleFeedback
-        module_feedback_insert = text("""INSERT INTO ModuleFeedback (FeedbackID, ModuleID, ModuleLead, ModuleDetails, StudentInfo, ModuleEval, InclusiveNature, PastChanges, FutureChanges)
-                                         VALUES (:FeedbackID, :ModuleID, :ModuleLead, :ModuleDetails, :StudentInfo, :ModuleEval, :InclusiveNature, :PastChanges, :FutureChanges)""")
-        db.session.execute(module_feedback_insert, {"FeedbackID": FeedbackID, "ModuleID": ModuleID, "ModuleLead": data['moduleLead'], "ModuleDetails": data['moduleDetails'], "StudentInfo": data['studentInfo'], "ModuleEval": data['moduleEval'], "InclusiveNature": data['inclusiveNature'], "PastChanges": data['pastChanges'], "FutureChanges": data['futureChanges']})
+        module_feedback_insert = text("""INSERT INTO ModuleFeedback (FeedbackID, ModuleID, ModuleLead, StudentInfo, ModuleEval, InclusiveNature, PastChanges, FutureChanges)
+                                         VALUES (:FeedbackID, :ModuleID, :ModuleLead, :StudentInfo, :ModuleEval, :InclusiveNature, :PastChanges, :FutureChanges)""")
+        db.session.execute(module_feedback_insert, {"FeedbackID": FeedbackID, "ModuleID": ModuleID, "ModuleLead": data['moduleLead'], "StudentInfo": data['studentInfo'], "ModuleEval": data['moduleEval'], "InclusiveNature": data['inclusiveNature'], "PastChanges": data['pastChanges'], "FutureChanges": data['futureChanges']})
 
         db.session.commit()
         return jsonify({'result': 'success'}), 200
@@ -49,17 +49,25 @@ def submit_review():
         print(e)
         return jsonify({'result': 'failure', 'error': str(e)}), 500
 
+# GET USER REVIEW - USED TO DISPLAY TABLES WITH REVIEWS
 @app.route('/get-user-reviews')
 def get_reviews():
     #userID = session.get('user_id') ONCE LOGIN IS SETUP
     UserID = 1
 
     try:
-        all_reviews = text("SELECT School, Deadline FROM Feedback WHERE UserID = :UserID")
+        # Join Feedback with ModuleFeedback, then ModuleFeedback with Module
+        all_reviews = text("""
+            SELECT mo.ModuleName, f.Deadline
+            FROM Feedback f
+            JOIN ModuleFeedback mf ON f.FeedbackID = mf.FeedbackID
+            JOIN Module mo ON mf.ModuleID = mo.ModuleID
+            WHERE f.UserID = :UserID
+        """)
         result = db.session.execute(all_reviews, {'UserID': UserID}).mappings().all()
 
         # Explicitly converting each row to a dictionary
-        all_reviews = [{'school': row['School'], 'deadline': row['Deadline']} for row in result]
+        all_reviews = [{'moduleName': row['ModuleName'], 'deadline': row['Deadline']} for row in result]
 
         return jsonify(all_reviews)
 
