@@ -1,5 +1,5 @@
 function submitReview() {
-    document.getElementById("reviewButton")
+    document.getElementById("reviewButton").innerHTML = '<i class="fa-solid fa-gear fa-spin" id="spinner"></i>'
 
     // Setting all form values
     let academicYearVal = document.getElementById("academicYear").value;
@@ -47,6 +47,8 @@ function submitReview() {
         return response.json(); 
     })
     .then(data => {
+        document.getElementById("reviewButton").innerHTML = 'Submit';
+        window.location.href = 'lecturerDashboard.html';
         console.log('Success:', data); 
     })
     .catch((error) => {

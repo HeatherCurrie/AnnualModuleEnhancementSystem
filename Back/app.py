@@ -26,7 +26,7 @@ db = SQLAlchemy(app)
 def submit_review():
     data = request.get_json()
     UserID = 1
-    Completed = "To-Complete"
+    Completed = "Completed"
     ModuleID = 1
 
     try:
