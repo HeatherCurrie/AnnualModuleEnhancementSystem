@@ -26,28 +26,30 @@ db = SQLAlchemy(app)
 def submit_review():
     data = request.get_json()
     UserID = 1
-    Completed = "To-Complete"
-    ModuleID = 1
+    Completed = "Completed"
 
     try:
-        # Insert into Feedback - MUST CHANGE USERID AND COMPLETED IN FUTURE
-        postReview = db.session.execute(text("""INSERT INTO feedback (UserID, AcademicYear, School, Other, Date, Completed, Author)
-                                        VALUES (:UserID, :AcademicYear, :School, :Other, :Date, :Completed, :Author)"""), {"UserID": UserID, "AcademicYear": data['academicYear'], "School": data['school'], "Other": data['other'], "Date": data['date'], "Completed": Completed, "Author": data['author']})
+        # Assuming 'FeedbackID' is part of the data payload from the client
+        FeedbackID = data['FeedbackID']
+        
+        # Update feedback record
+        db.session.execute(text("""UPDATE feedback 
+                                   SET UserID = :UserID, AcademicYear = :AcademicYear, School = :School, 
+                                    Other = :Other, Date = :Date, Completed = :Completed, Author = :Author
+                                   WHERE FeedbackID = :FeedbackID"""), {"UserID": UserID, "AcademicYear": data['academicYear'], "School": data['school'],"Other": data['other'], "Date": data['date'], "Completed": "Completed", "Author": data['author'], "FeedbackID": FeedbackID})
 
-        # Get FeedbackID from previous query
-        FeedbackID = db.session.execute(text("SELECT LAST_INSERT_ID()")).fetchone()[0]
-
-        # Insert into ModuleFeedback
-        module_feedback_insert = text("""INSERT INTO ModuleFeedback (FeedbackID, ModuleID, ModuleLead, StudentInfo, ModuleEval, InclusiveNature, PastChanges, FutureChanges)
-                                         VALUES (:FeedbackID, :ModuleID, :ModuleLead, :StudentInfo, :ModuleEval, :InclusiveNature, :PastChanges, :FutureChanges)""")
-        db.session.execute(module_feedback_insert, {"FeedbackID": FeedbackID, "ModuleID": ModuleID, "ModuleLead": data['moduleLead'], "StudentInfo": data['studentInfo'], "ModuleEval": data['moduleEval'], "InclusiveNature": data['inclusiveNature'], "PastChanges": data['pastChanges'], "FutureChanges": data['futureChanges']})
+        # Update ModuleFeedback records associated with the given FeedbackID
+        db.session.execute(text("""UPDATE ModuleFeedback
+                                   SET StudentInfo = :StudentInfo, 
+                                    ModuleEval = :ModuleEval, InclusiveNature = :InclusiveNature, 
+                                    PastChanges = :PastChanges, FutureChanges = :FutureChanges
+                                   WHERE FeedbackID = :FeedbackID"""), {"FeedbackID": FeedbackID, "StudentInfo": data['studentInfo'], "ModuleEval": data['moduleEval'], "InclusiveNature": data['inclusiveNature'], "PastChanges": data['pastChanges'], "FutureChanges": data['futureChanges']})
 
         db.session.commit()
         return jsonify({'result': 'success'}), 200
-
     except Exception as e:
-        print(e)
         return jsonify({'result': 'failure', 'error': str(e)}), 500
+
 
 # GET USER REVIEW - USED TO DISPLAY TABLES WITH REVIEWS
 @app.route('/get-user-reviews')
@@ -57,22 +59,61 @@ def get_reviews():
 
     try:
         # Join Feedback with ModuleFeedback, then ModuleFeedback with Module
-        all_reviews = text("""
-            SELECT mo.ModuleName, f.Deadline, f.Completed
-            FROM Feedback f
-            JOIN ModuleFeedback mf ON f.FeedbackID = mf.FeedbackID
-            JOIN Module mo ON mf.ModuleID = mo.ModuleID
-            WHERE f.UserID = :UserID
-        """)
+        all_reviews = text("""SELECT mo.ModuleName, f.Deadline, f.Completed, f.FeedbackID
+                        FROM Feedback f
+                        JOIN ModuleFeedback mf ON f.FeedbackID = mf.FeedbackID
+                        JOIN Module mo ON mf.ModuleID = mo.ModuleID
+                        WHERE f.UserID = :UserID""")
         result = db.session.execute(all_reviews, {'UserID': UserID}).mappings().all()
 
-        # Explicitly converting each row to a dictionary
-        all_reviews = [{'moduleName': row['ModuleName'], 'deadline': row['Deadline'], 'completed': row['Completed']} for row in result]
+        all_reviews = [{'moduleName': row['ModuleName'], 'deadline': row['Deadline'], 'completed': row['Completed'], 'feedbackID': row['FeedbackID']} for row in result]
 
         return jsonify(all_reviews)
 
     except Exception as e:
         print(e)
+        return jsonify({'result': 'failure', 'error': str(e)}), 500
+
+
+# GET MODULES FOR REVIEW DELEGATION
+@app.route('/get-modules')
+def get_modules():
+    all_modules = text("""SELECT ModuleID, ModuleName, ModuleLead
+                       FROM Module""")
+
+    result = db.session.execute(all_modules).mappings().all()
+
+    all_modules = [{'moduleID': row['ModuleID'], 'moduleName': row['ModuleName'], 'moduleLead': row['ModuleLead']} for row in result]
+
+    return jsonify(all_modules)
+
+
+# DELEGATE REVIEWS
+@app.route('/delegate-reviews', methods=['POST'])
+def delegate_reviews():
+    try:
+        data = request.get_json()
+        #userID = session.get('user_id') ONCE LOGIN IS SETUP
+        UserID = 1  
+        Completed = "To-Complete"
+        
+        for element in data['moduleID']:
+            # Insert into Feedback table
+            feedback_result = db.session.execute(text("""INSERT INTO Feedback (UserID, Deadline, Completed)
+                                                    VALUES (:UserID, :Deadline, :Completed)"""), {"UserID": UserID, "Deadline": data['deadline'], "Completed": Completed})
+            
+            # Get FeedbackID from previous query
+            FeedbackID = db.session.execute(text("SELECT LAST_INSERT_ID()")).fetchone()[0]
+
+            # Insert into ModuleFeedback table
+            db.session.execute(text("""INSERT INTO ModuleFeedback (FeedbackID, ModuleID)
+                                        VALUES (:FeedbackID, :ModuleID)"""), {"FeedbackID": FeedbackID, "ModuleID": element})
+            
+            db.session.commit()
+
+        return jsonify({'result': 'success'}), 200
+
+    except Exception as e:
         return jsonify({'result': 'failure', 'error': str(e)}), 500
 
 if __name__ == '__main__':

@@ -8,6 +8,7 @@
     <title>Review System - Admin</title>
 </head>
 <body>
+    
   <!--NAVBAR-->
     <nav class="navbar navbar-expand-lg navbar-light dundeeBlue">
         <div class="container-fluid">
@@ -19,5 +20,44 @@
             </ul>
         </div>
     </nav>
+
+    <div class="container-fluid h-100">
+        <div class="row h-100">
+
+            <!--REVIEW DELEGATION-->
+
+            <div class="col container-fluid m-4">
+                <h4>Delegate Reviews</h4>
+                <form>
+                    <div class="mt-4">
+                        <label class="form-label mt-1">Module: </label>
+                        <select id="delegationDropdown" class="form-select ms-2" multiple>
+ 
+                        </select>
+                        <div class="mb-3">
+                            <label class="form-label">Deadline:</label>
+                            <input type="date" class="form-control" id="deadline" required>
+                        </div>
+                        <button id="delegateButton" onclick="delegate()" type="submit" class="btn dundeeBlue text-white ms-2">Delegate</button>
+                    </div>
+                </form>
+            </div>
+    
+            <!--ADD/ALTER MODULES-->
+
+            <div class="col container-fluid m-4">
+                <h4>Modules</h4>
+                <form>
+                    <div class="mt-4">
+                        <div class="d-flex">
+                           
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="../JS/delegateReviews.js"></script>
 </body>
 </html>
