@@ -6,16 +6,11 @@ function fetchAndDisplayReviews() {
             const inProgressTable = document.getElementById('inProgressTable').getElementsByTagName('tbody')[0];
             const completedTable = document.getElementById('completedTable').getElementsByTagName('tbody')[0];
 
-            // Clear existing content
-            toCompleteTable.innerHTML = '';
-            inProgressTable.innerHTML = '';
-            completedTable.innerHTML = '';
-
             // Check if there are any reviews
             if (data.length === 0) {
-                toCompleteTable.innerHTML = '<tr><td colspan="2">No reviews found.</td></tr>';
-                inProgressTable.innerHTML = '<tr><td colspan="2">No reviews found.</td></tr>';
-                completedTable.innerHTML = '<tr><td colspan="2">No reviews found.</td></tr>';
+                toCompleteTable.innerHTML = '<tr><td colspan="2">No reviews found</td></tr>';
+                inProgressTable.innerHTML = '<tr><td colspan="2">No reviews found</td></tr>';
+                completedTable.innerHTML = '<tr><td colspan="2">No reviews found</td></tr>';
                 return;
             }
 
@@ -29,6 +24,12 @@ function fetchAndDisplayReviews() {
                 let row;
                 if (review.completed === 'To-Complete') {
                     row = toCompleteTable.insertRow();
+
+                    // Allow row to be clicked + take to specific Feedback review by ID form                   
+                    row.dataset.feedbackID = review.feedbackID; 
+                    row.addEventListener('click', function() {
+                    window.location.href = `reviewModule.html?FeedbackID=${this.dataset.feedbackID}`;
+                    });
                 } else if (review.completed === 'In-Progress') {
                     row = inProgressTable.insertRow();
                 } else if (review.completed === 'Completed') {
