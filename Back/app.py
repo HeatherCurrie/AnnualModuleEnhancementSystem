@@ -74,6 +74,24 @@ def get_reviews():
         print(e)
         return jsonify({'result': 'failure', 'error': str(e)}), 500
 
+# GET ALL REVIEWS FOR ADMIN DASHBOARD
+@app.route('/get-all-reviews')
+def get_all_reviews():
+    try:
+        # Join Feedback with ModuleFeedback, then ModuleFeedback with Module
+        all_reviews = text("""SELECT mo.ModuleName, mo.ModuleLead, f.Deadline, f.Completed
+                        FROM Feedback f
+                        JOIN ModuleFeedback mf ON f.FeedbackID = mf.FeedbackID
+                        JOIN Module mo ON mf.ModuleID = mo.ModuleID""")
+        result = db.session.execute(all_reviews).mappings().all()
+
+        all_reviews = [{'moduleName': row['ModuleName'], 'deadline': row['Deadline'], 'completed': row['Completed'], 'moduleLead': row['ModuleLead']} for row in result]
+
+        return jsonify(all_reviews)
+
+    except Exception as e:
+        print(e)
+        return jsonify({'result': 'failure', 'error': str(e)}), 500
 
 # GET MODULES FOR REVIEW DELEGATION
 @app.route('/get-modules')
@@ -115,6 +133,7 @@ def delegate_reviews():
 
     except Exception as e:
         return jsonify({'result': 'failure', 'error': str(e)}), 500
+    
 
 if __name__ == '__main__':
     app.run(debug=True)
