@@ -6,7 +6,6 @@ function submitReview() {
     // Setting all form values
     let academicYearVal = document.getElementById("academicYear").value;
     let schoolVal = document.getElementById("school").value;
-    let moduleLeadVal = document.getElementById("moduleLead").value;
     let studentInfoVal = document.getElementById("studentInfo").value;
     let moduleEvalVal = document.getElementById("moduleEval").value;
     let teachingEvalVal = document.getElementById("teachingEval").value;
@@ -21,7 +20,6 @@ function submitReview() {
         FeedbackID: feedbackID,
         academicYear: academicYearVal,
         school: schoolVal,
-        moduleLead: moduleLeadVal,
         studentInfo: studentInfoVal,
         moduleEval: moduleEvalVal,
         teachingEval: teachingEvalVal,

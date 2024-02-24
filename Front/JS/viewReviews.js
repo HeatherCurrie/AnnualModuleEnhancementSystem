@@ -8,9 +8,6 @@ function fetchAndDisplayReviews() {
 
             // Check if there are any reviews
             if (data.length === 0) {
-                toCompleteTable.innerHTML = '<tr><td colspan="2">No reviews found</td></tr>';
-                inProgressTable.innerHTML = '<tr><td colspan="2">No reviews found</td></tr>';
-                completedTable.innerHTML = '<tr><td colspan="2">No reviews found</td></tr>';
                 return;
             }
 

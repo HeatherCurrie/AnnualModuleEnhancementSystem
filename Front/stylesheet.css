@@ -7,8 +7,8 @@ html, body {
 
 body {
   min-height: 100vh;
+  font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
 }
-
 
 .dundeeBlue {
     background-color: #4365e2;
@@ -56,4 +56,22 @@ button:hover {
 
 .submitButton:hover {
     background-color: darkgreen !important;
+}
+
+/* TABLES */ 
+
+.moduleNameCell {
+    width: 80% !important;
+}
+
+.deadlineCell {
+    width: 20% !important;
+}
+
+.moduleNameCellAdmin {
+    width: 60% !important;
+}
+
+.leadLecturerCell {
+    width: 20% !important;
 }
