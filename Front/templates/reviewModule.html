@@ -8,7 +8,7 @@
     <script src="https://kit.fontawesome.com/2f2028059a.js" crossorigin="anonymous"></script>
     <title>Review System - Lecturer</title>
 </head>
-<body>
+<body class="background">
 
   <!--NAVBAR-->
   
@@ -27,65 +27,69 @@
 
     <div class="container-fluid mt-4" style="width:85%;">
         <form>
-            <div class="mb-3">
-                <label class="form-label">Academic Year:</label>
-                <select id="academicYear" class="form-select" required>
-                    <option selected disabled hidden>Select Academic Year</option>
-                    <option value="22/23">2022/2023</option>
-                    <option value="21/22">2021/2022</option>
-                    <option value="20/21">2020/2021</option>
-                </select>
+            <div class="bg-white m-4 shadow p-3 mb-4 bg-body-tertiary rounded">
+                <div class="mb-3">
+                    <label class="form-label">Academic Year:</label>
+                    <select id="academicYear" class="form-select" required>
+                        <option selected disabled hidden>Select Academic Year</option>
+                        <option value="22/23">2022/2023</option>
+                        <option value="21/22">2021/2022</option>
+                        <option value="20/21">2020/2021</option>
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">School:</label>
+                    <select class="form-select" id="school" required>
+                        <option selected disabled hidden>Open Dropdown Menu</option>
+                        <option value="Science and Engineering">Science and Engineering</option>
+                        <option value="Business">Business</option>
+                        <option value="Dentistry">Dentistry</option>
+                    </select>
+                </div>
             </div>
-            <div class="mb-3">
-                <label class="form-label">School:</label>
-                <select class="form-select" id="school" required>
-                    <option selected disabled hidden>Open Dropdown Menu</option>
-                    <option value="Science and Engineering">Science and Engineering</option>
-                    <option value="Business">Business</option>
-                    <option value="Dentistry">Dentistry</option>
-                </select>
+            <div class="bg-white m-4 shadow p-3 mb-4 bg-body-tertiary rounded">
+                <div class="mb-3">
+                    <label class="form-label">Student numbers, Achievement and Progression:</label>
+                    <textarea class="form-control" id="studentInfo" rows="3"></textarea>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Evaluation of the Operation of the Module:</label>
+                    <textarea class="form-control" id="moduleEval" rows="3"></textarea>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Evaluation of Approach to Teaching, Assessment and Feedback:</label>
+                    <textarea class="form-control" id="teachingEval" rows="3"></textarea>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Inclusive Nature:</label>
+                    <input type="text" class="form-control" id="inclusiveNature">
+                </div>
             </div>
-            <div class="mb-3">
-                <label class="form-label">Module Leader/Organiser:</label>
-                <input type="text" class="form-control" id="moduleLead">
+            <div class="bg-white m-4 shadow p-3 mb-4 bg-body-tertiary rounded">
+                <div class="mb-3">
+                    <label class="form-label">Past Changes:</label>
+                    <textarea class="form-control" id="pastChanges" rows="3"></textarea>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Future Changes:</label>
+                    <textarea class="form-control" id="futureChanges" rows="3"></textarea>
+                </div>
             </div>
-            <div class="mb-3">
-                <label class="form-label">Student numbers, Achievement and Progression:</label>
-                <textarea class="form-control" id="studentInfo" rows="3"></textarea>
+            <div class="bg-white m-4 shadow p-3 mb-4 bg-body-tertiary rounded">
+                <div class="mb-3">
+                    <label class="form-label">Other:</label>
+                    <input type="text" class="form-control" id="other">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Author:</label>
+                    <input type="text" class="form-control" id="author" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Date:</label>
+                    <input type="date" class="form-control" id="date" required>
+                </div>
             </div>
-            <div class="mb-3">
-                <label class="form-label">Evaluation of the Operation of the Module:</label>
-                <textarea class="form-control" id="moduleEval" rows="3"></textarea>
-            </div>
-            <div class="mb-3">
-                <label class="form-label">Evaluation of Approach to Teaching, Assessment and Feedback:</label>
-                <textarea class="form-control" id="teachingEval" rows="3"></textarea>
-            </div>
-            <div class="mb-3">
-                <label class="form-label">Inclusive Nature:</label>
-                <input type="text" class="form-control" id="inclusiveNature">
-            </div>
-            <div class="mb-3">
-                <label class="form-label">Past Changes:</label>
-                <textarea class="form-control" id="pastChanges" rows="3"></textarea>
-            </div>
-            <div class="mb-3">
-                <label class="form-label">Future Changes:</label>
-                <textarea class="form-control" id="futureChanges" rows="3"></textarea>
-            </div>
-            <div class="mb-3">
-                <label class="form-label">Other:</label>
-                <input type="text" class="form-control" id="other">
-            </div>
-            <div class="mb-3">
-                <label class="form-label">Author:</label>
-                <input type="text" class="form-control" id="author" required>
-            </div>
-            <div class="mb-3">
-                <label class="form-label">Date:</label>
-                <input type="date" class="form-control" id="date" required>
-            </div>
-            <button type="button" onclick="submitReview()" id="reviewButton" class="btn text-white dundeeBlue mb-4">Submit</button>
+            <button type="button" onclick="submitReview()" id="reviewButton" class="btn text-white dundeeBlue ms-4 mb-3">Submit</button>
         </form>
     </div>
 
