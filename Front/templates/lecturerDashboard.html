@@ -7,8 +7,10 @@
     <link rel="stylesheet" href="../stylesheet.css">
     <title>Review System - Lecturer</title>
 </head>
-<body>
+<body class="background">
+
   <!--NAVBAR-->
+
     <nav class="navbar navbar-expand-lg navbar-light dundeeBlue">
         <div class="container-fluid">
             <a class="nav-link navbar-brand text-white" href="lecturerDashboard.html">Review System</a>
@@ -20,52 +22,52 @@
         </div>
     </nav>
 
-
     <!--TO COMPLETE-->
-    <div class="mx-auto mt-4" style="width: 85%;">
+
+    <div class="mx-auto mt-4 bg-white shadow p-3 mb-4 bg-body-tertiary rounded" style="width: 85%;">
         <h3 class="mb-3">To Complete</h3>
-        <table class="table table-bordered shadow-sm p-3 mb-4 bg-body-tertiary rounded" id="toCompleteTable">
+        <table class="table table-bordered" id="toCompleteTable">
             <thead>
                 <tr>
                     <th scope="col" class="table-danger moduleNameCell">Module</th>
                     <th scope="col" class="table-danger deadlineCell">Deadline</th>
                 </tr>
             </thead>
-            <tbody>
+            <tbody class="toCompleteTable">
 
             </tbody>
         </table>
     </div>
 
-
     <!--IN PROGRESS-->
-    <div class="mx-auto mt-4" style="width: 85%;">
+
+    <div class="mx-auto mt-4 bg-white shadow p-3 mb-4 bg-body-tertiary rounded" style="width: 85%;">
         <h3 class="mb-3">In Progress</h3>
-        <table class="table table-bordered shadow-sm p-3 mb-4 bg-body-tertiary rounded" id="inProgressTable">
+        <table class="table table-bordered" id="inProgressTable">
             <thead>
                 <tr>
                     <th scope="col" class="table-warning moduleNameCell">Module</th>
                     <th scope="col" class="table-warning deadlineCell">Deadline</th>
                 </tr>
             </thead>
-            <tbody>
+            <tbody class="inProgressTable">
 
             </tbody>
         </table>
     </div>
 
-
     <!--COMPLETED-->
-    <div class="mx-auto mt-4" style="width: 85%;">
+
+    <div class="mx-auto mt-4 bg-white shadow p-3 mb-4 bg-body-tertiary rounded" style="width: 85%;">
         <h3 class="mb-3">Completed</h3>
-        <table class="table table-bordered shadow-sm p-3 mb-4 bg-body-tertiary rounded" id="completedTable">
+        <table class="table table-bordered" id="completedTable">
             <thead>
                 <tr>
                     <th scope="col" class="table-success moduleNameCell">Module</th>
                     <th scope="col" class="table-success deadlineCell">Deadline</th>
                 </tr>
             </thead>
-            <tbody>
+            <tbody class="completedTable">
 
             </tbody>
         </table>

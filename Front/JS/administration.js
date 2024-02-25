@@ -1,42 +1,86 @@
-function displayIncompleteReviews() {
-    fetch('http://127.0.0.1:5000/get-all-reviews')
-        .then(response => response.json())  // Parse the JSON from the response
-        .then(data => {
-            const incompleteTable = document.getElementById('incompleteTable');
+function displayModules() {
+    fetch('http://127.0.0.1:5000/get-modules')
+    .then(response => response.json())
+    .then(data => {
+        document.getElementById("moduleSpinner").remove()
+        const moduleTable = document.getElementById('moduleTable');
 
-            // Check if there are any reviews
-            if (data.length === 0) {
-                incompleteTable.innerHTML = '<tr><td colspan="2">No reviews found</td></tr>';
+        data.forEach(module => {
+
+            // Create a table row and cells
+            let row;
+            row = moduleTable.insertRow();
+
+            // If row created
+            if (row) {
+                const moduleNameCell = row.insertCell(0);
+                const moduleLeadCell = row.insertCell(1);
+
+                moduleNameCell.textContent = module.moduleName;
+                moduleLeadCell.textContent = module.moduleLead;
             }
-
-            // Iterate over each review and display it
-            data.forEach(review => {
-                // Format Deadline
-                const deadlineDate = new Date(review.deadline);
-                const formattedDeadline = deadlineDate.toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' });
-
-                // Create a table row and cells
-                let row;
-                if (review.completed === 'To-Complete' || review.completed ==='In-Progress') {
-                    row = incompleteTable.insertRow();
-                } 
-
-                // If row created
-                if (row) {
-                    const moduleNameCell = row.insertCell(0);
-                    const moduleLeadCell = row.insertCell(1);
-                    const deadlineCell = row.insertCell(2);
-
-                    moduleNameCell.textContent = review.moduleName;
-                    moduleLeadCell.textContent = review.moduleLead;
-                    deadlineCell.textContent = formattedDeadline;
-                }
-            });
-        })
-        .catch(error => {
-            console.error('Error fetching reviews:', error);
         });
+    })
+    .catch(error => console.error('Error fetching options:', error));
 }
 
+function dropdownOptions() {
+    fetch('http://127.0.0.1:5000/get-modules')
+    .then(response => response.json())
+    .then(data => {
+        const select = document.getElementById('delegationDropdown');
+
+        data.forEach(option => {
+            const opt = document.createElement('option');
+            opt.value = option.moduleID;
+            opt.textContent = option.moduleName; 
+            select.appendChild(opt);
+        });
+    })
+    .catch(error => console.error('Error fetching options:', error));
+}
+
+function delegate() {
+    document.getElementById("delegateButton").innerHTML = '<i class="fa-solid fa-gear fa-spin" id="spinner"></i>'
+    const select = document.getElementById("delegationDropdown");
+    const selectedVal = Array.from(select.selectedOptions).map(option => option.value);
+    let deadlineVal = document.getElementById("deadline").value;
+        
+    const data = {
+        moduleID: selectedVal,
+        deadline: deadlineVal
+    };
+    console.log(data)
+        
+    // Send the data to the server using Fetch API
+    
+    fetch('http://127.0.0.1:5000/delegate-reviews', { 
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data)
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok: ' + response.statusText);
+        }
+        return response.json(); 
+    })
+    .then(data => {
+        //window.location.href = 'adminDashboard.html';
+        console.log('Success:', data); 
+    })
+    .catch((error) => {
+        console.error('Error:', error);
+    });
+}
+
+function addModule() {
+    document.getElementById("addModuleButton").innerHTML = '<i class="fa-solid fa-gear fa-spin" id="spinner"></i>'
+}
+
+
 // Call the function when the DOM is fully loaded
-document.addEventListener('DOMContentLoaded', displayIncompleteReviews);
+document.addEventListener('DOMContentLoaded', displayModules);
+document.addEventListener('DOMContentLoaded', dropdownOptions);

@@ -2,9 +2,9 @@ function fetchAndDisplayReviews() {
     fetch('http://127.0.0.1:5000/get-user-reviews')
         .then(response => response.json())  // Parse the JSON from the response
         .then(data => {
-            const toCompleteTable = document.getElementById('toCompleteTable').getElementsByTagName('tbody')[0];
-            const inProgressTable = document.getElementById('inProgressTable').getElementsByTagName('tbody')[0];
-            const completedTable = document.getElementById('completedTable').getElementsByTagName('tbody')[0];
+            const toCompleteTable = document.getElementById('toCompleteTable')
+            const inProgressTable = document.getElementById('inProgressTable')
+            const completedTable = document.getElementById('completedTable')
 
             // Check if there are any reviews
             if (data.length === 0) {
