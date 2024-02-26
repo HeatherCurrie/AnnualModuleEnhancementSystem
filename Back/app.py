@@ -4,7 +4,6 @@ from sqlalchemy import text
 import os
 from flask_cors import CORS
 from dotenv import load_dotenv
-import traceback
 
 load_dotenv()
 app = Flask(__name__)
@@ -135,7 +134,6 @@ def add_module():
         return jsonify({'result': 'success'}), 200
 
     except Exception as e:
-        traceback.print_exc()
         return jsonify({'result': 'failure', 'error': str(e)}), 500
 
 
