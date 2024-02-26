@@ -50,7 +50,6 @@ function delegate() {
         moduleID: selectedVal,
         deadline: deadlineVal
     };
-    console.log(data)
         
     // Send the data to the server using Fetch API
     
@@ -78,6 +77,41 @@ function delegate() {
 
 function addModule() {
     document.getElementById("addModuleButton").innerHTML = '<i class="fa-solid fa-gear fa-spin" id="spinner"></i>'
+    
+    let moduleCodeVal = document.getElementById("moduleCode").value;
+    let moduleNameVal = document.getElementById("moduleName").value;
+    let moduleLeadVal = document.getElementById("moduleLead").value;
+    let creditsVal = parseInt(document.getElementById('credits').value);
+        
+    const data = {
+        moduleCode: moduleCodeVal,
+        moduleName: moduleNameVal,
+        moduleLead: moduleLeadVal,
+        credits: creditsVal
+    };
+        
+    // Send the data to the server using Fetch API
+    
+    fetch('http://127.0.0.1:5000/add-module', { 
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data)
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok: ' + response.statusText);
+        }
+        return response.json(); 
+    })
+    .then(data => {
+        window.location.href = 'administration.html';
+        console.log('Success:', data); 
+    })
+    .catch((error) => {
+        console.error('Error:', error);
+    });
 }
 
 
