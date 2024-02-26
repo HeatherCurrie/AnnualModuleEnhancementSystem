@@ -13,7 +13,7 @@ function submitReview() {
     let pastChangesVal = document.getElementById("pastChanges").value;
     let futureChangesVal = document.getElementById("futureChanges").value;
     let otherVal = document.getElementById("other").value;
-    let authorVal = document.getElementById("author").value;
+    let authorVal = document.getElementById("firstName").value + " " + document.getElementById("lastName").value;
     let dateVal = document.getElementById("date").value;
 
     const data = {

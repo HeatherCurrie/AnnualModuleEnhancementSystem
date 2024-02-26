@@ -7,7 +7,7 @@ function displayIncompleteReviews() {
 
             // Check if there are any reviews
             if (data.length === 0) {
-                incompleteTable.innerHTML = '<tr><td colspan="2">No reviews found</td></tr>';
+                incompleteTable.innerHTML = '<tr><td colspan="3" class="text-center">No reviews found</td></tr>';
                 return;
             }
 

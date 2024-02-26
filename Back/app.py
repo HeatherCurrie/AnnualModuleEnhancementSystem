@@ -99,12 +99,12 @@ def get_all_reviews():
 # GET MODULES FOR REVIEW DELEGATION
 @app.route('/get-modules')
 def get_modules():
-    all_modules = text("""SELECT ModuleID, ModuleName, ModuleLead
+    all_modules = text("""SELECT ModuleID, ModuleName, ModuleLead, ModuleCode, Credits
                        FROM Module""")
 
     result = db.session.execute(all_modules).mappings().all()
 
-    all_modules = [{'moduleID': row['ModuleID'], 'moduleName': row['ModuleName'], 'moduleLead': row['ModuleLead']} for row in result]
+    all_modules = [{'moduleID': row['ModuleID'], 'moduleName': row['ModuleName'], 'moduleLead': row['ModuleLead'], 'moduleCode': row['ModuleCode'], 'credits': row['Credits']} for row in result]
 
     return jsonify(all_modules)
 

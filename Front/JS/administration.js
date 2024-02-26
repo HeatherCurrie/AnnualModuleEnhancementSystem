@@ -13,11 +13,15 @@ function displayModules() {
 
             // If row created
             if (row) {
-                const moduleNameCell = row.insertCell(0);
-                const moduleLeadCell = row.insertCell(1);
+                const moduleCodeCell = row.insertCell(0);
+                const moduleNameCell = row.insertCell(1);
+                const moduleLeadCell = row.insertCell(2);
+                const creditsCell = row.insertCell(3);
 
+                moduleCodeCell.textContent = module.moduleCode;
                 moduleNameCell.textContent = module.moduleName;
                 moduleLeadCell.textContent = module.moduleLead;
+                creditsCell.textContent = module.credits;
             }
         });
     })
