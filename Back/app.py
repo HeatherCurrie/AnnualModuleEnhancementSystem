@@ -4,6 +4,7 @@ from sqlalchemy import text
 import os
 from flask_cors import CORS
 from dotenv import load_dotenv
+import traceback
 
 load_dotenv()
 app = Flask(__name__)
@@ -18,6 +19,7 @@ app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {
         }
     }
 }
+
 
 db = SQLAlchemy(app)
 
@@ -74,6 +76,7 @@ def get_reviews():
         print(e)
         return jsonify({'result': 'failure', 'error': str(e)}), 500
 
+
 # GET ALL REVIEWS FOR ADMIN DASHBOARD
 @app.route('/get-all-reviews')
 def get_all_reviews():
@@ -93,6 +96,7 @@ def get_all_reviews():
         print(e)
         return jsonify({'result': 'failure', 'error': str(e)}), 500
 
+
 # GET MODULES FOR REVIEW DELEGATION
 @app.route('/get-modules')
 def get_modules():
@@ -104,6 +108,35 @@ def get_modules():
     all_modules = [{'moduleID': row['ModuleID'], 'moduleName': row['ModuleName'], 'moduleLead': row['ModuleLead']} for row in result]
 
     return jsonify(all_modules)
+
+
+# ADD MODULE INTO DATABASE
+@app.route('/add-module', methods=['POST'])
+def add_module():
+    data = request.get_json()
+
+    try:
+        # FIND THE USERID OF THE MODULES LEAD :ECTURER
+        result = db.session.execute(text("""SELECT UserID
+                                        FROM User
+                                        WHERE Name = :ModuleLead"""), {'ModuleLead': data['moduleLead']})
+        UserID_result = result.fetchone()
+
+        if result is None:
+            return jsonify({'result': 'failure', 'error': 'Module lead not found'}), 404
+
+        UserID = UserID_result[0]
+
+        add_result = db.session.execute(text("""INSERT INTO Module (ModuleCode, ModuleName, ModuleLead, Credits, UserID)
+                                        VALUES (:ModuleCode, :ModuleName, :ModuleLead, :Credits, :UserID)"""), {"ModuleCode": data['moduleCode'], "ModuleName": data['moduleName'], "ModuleLead": data['moduleLead'], "Credits": data['credits'], "UserID": UserID})
+
+        db.session.commit()
+
+        return jsonify({'result': 'success'}), 200
+
+    except Exception as e:
+        traceback.print_exc()
+        return jsonify({'result': 'failure', 'error': str(e)}), 500
 
 
 # DELEGATE REVIEWS
