@@ -19,8 +19,37 @@ app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {
     }
 }
 
-
 db = SQLAlchemy(app)
+
+
+# DELEGATE REVIEWS
+@app.route('/delegate-reviews', methods=['POST'])
+def delegate_reviews():
+    try:
+        data = request.get_json()
+        #userID = session.get('user_id') ONCE LOGIN IS SETUP
+        UserID = 1  
+        Completed = "To-Complete"
+        
+        for element in data['moduleID']:
+            # Insert into Feedback table
+            feedback_result = db.session.execute(text("""INSERT INTO Feedback (UserID, Deadline, Completed)
+                                                    VALUES (:UserID, :Deadline, :Completed)"""), {"UserID": UserID, "Deadline": data['deadline'], "Completed": Completed})
+            
+            # Get FeedbackID from previous query
+            FeedbackID = db.session.execute(text("SELECT LAST_INSERT_ID()")).fetchone()[0]
+
+            # Insert into ModuleFeedback table
+            db.session.execute(text("""INSERT INTO ModuleFeedback (FeedbackID, ModuleID)
+                                        VALUES (:FeedbackID, :ModuleID)"""), {"FeedbackID": FeedbackID, "ModuleID": element})
+            
+            db.session.commit()
+
+        return jsonify({'result': 'success'}), 200
+
+    except Exception as e:
+        return jsonify({'result': 'failure', 'error': str(e)}), 500
+
 
 # When module review is submitted
 @app.route('/submit-review-endpoint', methods=['POST'])
@@ -115,7 +144,7 @@ def add_module():
     data = request.get_json()
 
     try:
-        # FIND THE USERID OF THE MODULES LEAD :ECTURER
+        # FIND THE USERID OF THE MODULES LEAD LECTURER
         result = db.session.execute(text("""SELECT UserID
                                         FROM User
                                         WHERE Name = :ModuleLead"""), {'ModuleLead': data['moduleLead']})
@@ -135,36 +164,35 @@ def add_module():
 
     except Exception as e:
         return jsonify({'result': 'failure', 'error': str(e)}), 500
+    
 
+@app.route('/update-module-row', methods=['POST'])
+def update_module_row():
+    data = request.get_json()
+    print(data.get("moduleID"))  # Specifically check for ModuleID
 
-# DELEGATE REVIEWS
-@app.route('/delegate-reviews', methods=['POST'])
-def delegate_reviews():
     try:
-        data = request.get_json()
-        #userID = session.get('user_id') ONCE LOGIN IS SETUP
-        UserID = 1  
-        Completed = "To-Complete"
-        
-        for element in data['moduleID']:
-            # Insert into Feedback table
-            feedback_result = db.session.execute(text("""INSERT INTO Feedback (UserID, Deadline, Completed)
-                                                    VALUES (:UserID, :Deadline, :Completed)"""), {"UserID": UserID, "Deadline": data['deadline'], "Completed": Completed})
-            
-            # Get FeedbackID from previous query
-            FeedbackID = db.session.execute(text("SELECT LAST_INSERT_ID()")).fetchone()[0]
+        # FIND THE USERID OF THE MODULES LEAD LECTURER
+        result = db.session.execute(text("""SELECT UserID
+                                        FROM User
+                                        WHERE Name = :ModuleLead"""), {'ModuleLead': data['moduleLead']})
+        UserID_result = result.fetchone()
 
-            # Insert into ModuleFeedback table
-            db.session.execute(text("""INSERT INTO ModuleFeedback (FeedbackID, ModuleID)
-                                        VALUES (:FeedbackID, :ModuleID)"""), {"FeedbackID": FeedbackID, "ModuleID": element})
-            
-            db.session.commit()
+        if UserID_result is None:
+            return jsonify({'result': 'failure', 'error': 'Module lead not found'}), 404
+
+        UserID = UserID_result[0]
+
+        add_result = db.session.execute(text("""UPDATE Module
+                                        SET ModuleCode = :ModuleCode, ModuleName = :ModuleName, ModuleLead = :ModuleLead, Credits = :Credits, UserID = :UserID
+                                        WHERE ModuleID = :ModuleID"""), {"ModuleCode": data['moduleCode'], "ModuleName": data['moduleName'], "ModuleLead": data['moduleLead'], "Credits": data['credits'], "UserID": UserID, "ModuleID": data['moduleID']})
+
+        db.session.commit()
 
         return jsonify({'result': 'success'}), 200
 
     except Exception as e:
         return jsonify({'result': 'failure', 'error': str(e)}), 500
-    
 
 if __name__ == '__main__':
     app.run(debug=True)
