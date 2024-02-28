@@ -5,7 +5,7 @@ function displayModules() {
         document.getElementById("moduleSpinner").remove()
         const moduleTable = document.getElementById('moduleTable');
 
-        data.forEach(module => {
+        data.forEach((module, i) => {
 
             // Create a table row and cells
             let row;
@@ -13,11 +13,27 @@ function displayModules() {
 
             // If row created
             if (row) {
-                const moduleNameCell = row.insertCell(0);
-                const moduleLeadCell = row.insertCell(1);
+                // Creating edit button
+                var button = document.createElement("button");
+                button.setAttribute("id", "editButton");
+                button.setAttribute("type", "button");
+                button.classList.add("btn", "dundeeBlue", "text-white"); 
+                button.textContent = "Edit Row";
+                button.dataset.rowIndex = i;
+                button.dataset.moduleID = module.moduleID;
+                button.addEventListener('click', editRow); 
 
+                const moduleCodeCell = row.insertCell(0);
+                const moduleNameCell = row.insertCell(1);
+                const moduleLeadCell = row.insertCell(2);
+                const creditsCell = row.insertCell(3);
+                const editCell = row.insertCell(4);
+
+                moduleCodeCell.textContent = module.moduleCode;
                 moduleNameCell.textContent = module.moduleName;
                 moduleLeadCell.textContent = module.moduleLead;
+                creditsCell.textContent = module.credits;
+                editCell.appendChild(button);
             }
         });
     })
@@ -108,6 +124,73 @@ function addModule() {
     .then(data => {
         window.location.href = 'administration.html';
         console.log('Success:', data); 
+    })
+    .catch((error) => {
+        console.error('Error:', error);
+    });
+}
+
+// CALLED WHEN EDIT ROW IS CLICKED
+function editRow(event) {
+    const editButton = event.target;
+    let rowIndex = editButton.dataset.rowIndex;
+    const row = editButton.closest("tr");
+  
+    // Go through column except 1 with button
+    const cells = row.querySelectorAll('td:not(:last-child)');
+    cells.forEach((cell, index) => {
+        // Store the current text
+        const currentText = cell.innerText;
+  
+        // Add input element
+        cell.innerHTML = '';
+        const input = document.createElement("input");
+        input.classList.add("form-control");
+  
+        // Set name for each field
+        switch (index) {
+            case 0: 
+                input.name = 'moduleCode'; break;
+            case 1: 
+                input.name = 'moduleName'; break;
+            case 2: 
+                input.name = 'moduleLead'; break;
+            case 3: 
+                input.name = 'credits'; break;
+        }
+
+        // Set the input's value to the text and add it to the cell
+        input.value = currentText;
+        cell.appendChild(input);
+    });
+  
+    editButton.textContent = "Save Row";
+    editButton.removeEventListener('click', editRow);
+    editButton.addEventListener('click', saveRow);
+  }
+
+function saveRow(event) {
+    const button = event.target;
+    const row = button.closest('tr');
+    const moduleIDVal = button.dataset.moduleID;
+    const inputs = row.querySelectorAll('input');
+    let data = {moduleID: moduleIDVal};
+
+    // Set data
+    inputs.forEach((input, index) => {
+        data[input.name] = input.value;
+    });
+
+    fetch('http://127.0.0.1:5000/update-module-row', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+    })
+    .then(response => response.json())
+    .then(data => {
+        console.log('Success:', data);
     })
     .catch((error) => {
         console.error('Error:', error);

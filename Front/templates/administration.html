@@ -33,14 +33,14 @@
     </nav>
 
     <div class="container-fluid">
-        <div class="row">
+        <div class="row mt-4">
 
             <!--REVIEW DELEGATION-->
 
-            <div class="col container-fluid m-4 bg-white shadow p-3 mb-5 bg-body-tertiary rounded">
+            <div class="col-md-10 mx-auto bg-white shadow p-3 mb-5 bg-body-tertiary rounded">
                 <h4>Delegate Reviews</h4>
                 <form>
-                    <div class="mt-4">
+                    <div>
                         <label class="form-label mt-1">Module: </label>
                         <select id="delegationDropdown" class="form-select" multiple>
  
@@ -53,16 +53,20 @@
                     </div>
                 </form>
             </div>
-    
-            <!--ADD/ALTER MODULES-->
+        </div>
+        <!--ADD/ALTER MODULES-->
 
-            <div class="col container-fluid m-4 bg-white shadow p-3 mb-5 bg-body-tertiary rounded">
+        <div class="row">
+            <div class="col-md-10 mx-auto bg-white shadow p-3 mb-5 bg-body-tertiary rounded">
                 <h4>Modules</h4>
                 <table class="table table-bordered shadow-sm p-3 mb-4 bg-body-tertiary rounded" id="inProgressTable">
                     <thead>
                         <tr>
-                            <th scope="col" class="table-warning moduleNameCellAdmin">Module</th>
-                            <th scope="col" class="table-warning leadLecturerCell">Module Lead</th>
+                            <th scope="col" class="table-warning" style="width: 10%;">Module Code</th>
+                            <th scope="col" class="table-warning">Module</th>
+                            <th scope="col" class="table-warning">Module Lead</th>
+                            <th scope="col" class="table-warning" style="width: 10%;">Credits</th>
+                            <th scope="col" class="table-warning" style="width: 10%;">Edit</th>
                         </tr>
                     </thead>
                     <tbody id="moduleTable">
@@ -75,6 +79,7 @@
                 <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addModuleModal">Add</button>
             </div>
         </div>
+        
 
         <!-- ADD MODULE MODAL -->
 

@@ -57,21 +57,3 @@ button:hover {
 .submitButton:hover {
     background-color: darkgreen !important;
 }
-
-/* TABLES */ 
-
-.moduleNameCell {
-    width: 80% !important;
-}
-
-.deadlineCell {
-    width: 20% !important;
-}
-
-.moduleNameCellAdmin {
-    width: 60% !important;
-}
-
-.leadLecturerCell {
-    width: 20% !important;
-}

@@ -40,7 +40,7 @@
                 <div class="mb-3">
                     <label class="form-label">School:</label>
                     <select class="form-select" id="school" required>
-                        <option selected disabled hidden>Open Dropdown Menu</option>
+                        <option selected disabled hidden>Select School</option>
                         <option value="Science and Engineering">Science and Engineering</option>
                         <option value="Business">Business</option>
                         <option value="Dentistry">Dentistry</option>
@@ -77,13 +77,14 @@
             </div>
             <div class="bg-white m-4 shadow p-3 mb-4 bg-body-tertiary rounded">
                 <div class="mb-3">
-                    <label class="form-label">Other:</label>
+                    <label class="form-label">Other (Not Required):</label>
                     <input type="text" class="form-control" id="other">
                 </div>
-                <div class="mb-3">
-                    <label class="form-label">Author:</label>
-                    <input type="text" class="form-control" id="author" required>
-                </div>
+                <label class="form-label">Author:</label>
+                <div class="input-group mb-3">
+                    <input type="text" class="form-control" placeholder="First name..." id="firstName">
+                    <input type="text" class="form-control" placeholder="Last Name..." id="lastName">
+                  </div>
                 <div class="mb-3">
                     <label class="form-label">Date:</label>
                     <input type="date" class="form-control" id="date" required>
