@@ -20,7 +20,7 @@
                     <a class="nav-link navbar-brand text-white" href="administration.html">Administration</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link navbar-brand active" href="manageReviews.html">Review Management</a>
+                    <a class="nav-link navbar-brand active" href="management.html">Review Management</a>
                 </li>
             </ul>
             <ul class="navbar-nav ms-auto"> 
@@ -32,11 +32,34 @@
     </nav>
 
     <div class="container-fluid">
+        <div class="row mt-4">
 
-        <!--VIEW NOT COMPLETED REVIEWS-->
+            <!-- EXPORT FEEDBACK TO WORD DOC -->
+
+            <div class="col-md-5 mx-auto bg-white shadow p-3 mb-3 bg-body-tertiary rounded">
+                <h4>Export feedback</h4>
+                <form>
+                    <div>
+                        <label class="form-label mt-1">Feedback: </label>
+                        <select id="feedbackDropdown" class="form-select" multiple>
+ 
+                        </select>
+                        <button onclick="exportWord()" id="exportButton" type="button" class="btn dundeeBlue text-white mt-3">Export</button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- AUTOMATICALLY EMAIL LECTURERS -->
+
+            <div class="col-md-5 mx-auto bg-white shadow p-3 mb-5 bg-body-tertiary rounded">
+                
+            </div>
+        </div>
+
+        <!--VIEW INCOMPLETE REVIEWS-->
 
         <div class="row mt-4">
-            <div class="col-md-10 mx-auto bg-white shadow p-3 mb-5 bg-body-tertiary rounded">
+            <div class="col-md-11 mx-auto bg-white shadow p-3 mb-5 bg-body-tertiary rounded">
                 <h3 class="mb-3">Reviews not Completed</h3>
                 <table class="table table-bordered shadow-sm p-3 mb-4 bg-body-tertiary rounded" id="inProgressTable">
                     <thead>
