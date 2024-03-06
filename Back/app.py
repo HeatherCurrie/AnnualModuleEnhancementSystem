@@ -4,6 +4,10 @@ from sqlalchemy import text
 import os
 from flask_cors import CORS
 from dotenv import load_dotenv
+from docx import Document
+from docx.shared import Inches, Pt, RGBColor
+from docx.enum.text import WD_ALIGN_PARAGRAPH
+
 
 load_dotenv()
 app = Flask(__name__)
@@ -110,13 +114,13 @@ def get_reviews():
 def get_all_reviews():
     try:
         # Join Feedback with ModuleFeedback, then ModuleFeedback with Module
-        all_reviews = text("""SELECT mo.ModuleName, mo.ModuleLead, f.Deadline, f.Completed
+        all_reviews = text("""SELECT mo.ModuleName, mo.ModuleLead, f.Deadline, f.Completed, f.FeedbackID
                         FROM Feedback f
                         JOIN ModuleFeedback mf ON f.FeedbackID = mf.FeedbackID
                         JOIN Module mo ON mf.ModuleID = mo.ModuleID""")
         result = db.session.execute(all_reviews).mappings().all()
 
-        all_reviews = [{'moduleName': row['ModuleName'], 'deadline': row['Deadline'], 'completed': row['Completed'], 'moduleLead': row['ModuleLead']} for row in result]
+        all_reviews = [{'moduleName': row['ModuleName'], 'deadline': row['Deadline'], 'completed': row['Completed'], 'moduleLead': row['ModuleLead'], 'feedbackID': row['FeedbackID']} for row in result]
 
         return jsonify(all_reviews)
 
@@ -193,6 +197,101 @@ def update_module_row():
 
     except Exception as e:
         return jsonify({'result': 'failure', 'error': str(e)}), 500
+
+
+@app.route('/export-word', methods=['POST'])
+def export_word():
+    from sqlalchemy import text
+    data = request.get_json()
+    
+    FeedbackIDs = data['feedbackID']  # First element
+    params = {"FeedbackID": tuple(FeedbackIDs)}  # Convert list to tuple for SQL IN clause compatibility
+
+    word_data = db.session.execute(text("""SELECT f.*, mf.*
+                                    FROM feedback f
+                                    JOIN ModuleFeedback mf ON f.FeedbackID = mf.FeedbackID
+                                    WHERE f.FeedbackID IN :FeedbackID OR mf.FeedbackID IN :FeedbackID
+                                    """),
+                                    params).mappings().fetchall()
+
+
+    # Create Document
+    document = Document()
+
+    title_style = document.styles['Title']
+    title_style.font.size = Pt(16)
+
+    # HEADER should be - 61, 88, 151
+    header = document.sections[0].header
+    paragraph = header.paragraphs[0]
+    run = paragraph.add_run()
+    run.add_picture('../Images/Dundee_Logo-Word_Doc.jpg')
+
+    column_widths = [Inches(2.5), Inches(4.5)]
+
+    # FOOTER
+    footer = document.sections[0].footer
+    paragraph = footer.add_paragraph()
+
+    # Set paragraph alignment and text
+    paragraph.alignment = WD_ALIGN_PARAGRAPH.RIGHT
+    paragraph.text = "Quality and Academic Standards Office, September 2016"
+
+    # Since we're replacing the text, let's format the existing run(s)
+    for run in paragraph.runs:
+        run.font.name = 'Calibri'
+        run.font.color.rgb = RGBColor(0x36, 0x5F, 0x91)
+
+    # Add a new paragraph for the update notice
+    paragraph2 = footer.add_paragraph("Updated February 2023")
+    paragraph2.alignment = WD_ALIGN_PARAGRAPH.RIGHT
+    # Format the run in the new paragraph
+    for run in paragraph2.runs:
+        run.font.name = 'Calibri'
+        run.font.color.rgb = RGBColor(0x36, 0x5F, 0x91)
+
+    # MAIN
+    for row in word_data:
+        title = document.add_paragraph('Annual Module Quality Enhancement Report', style='Title')
+        title.alignment = WD_ALIGN_PARAGRAPH.CENTER
+
+        # Define the titles and variables
+        records = {
+            "1. Module details": row.get("AcademicYear", "None"),
+            "2. Academic Year": row.get("AcademicYear", "None"),
+            "3. School": row.get("School", "None"),
+            "4. Module Leader/Organiser": row.get("AcademicYear", "None"),
+            "5. Student numbers, achievement and progression": row.get("StudentInfo", "None"),
+            "6. Evaluation of the operation of the module": row.get("ModuleEval", "None"),
+            "7. Evaluation of approach to teaching, assessment and feedback": row.get("ModuleEval", "None"),
+            "8. Inclusive nature of the curriculum": row.get("InclusiveNature", "None"),
+            "9. Effect of past changes": row.get("PastChanges", "None"),
+            "10. Proposed future changes": row.get("FutureChanges", "None"),
+            "11. Other comments": row.get("Other", "None"),
+            "12. Author and date": row.get("Author", "None"),
+        }
+
+        table = document.add_table(rows=len(records), cols=2)
+        table.style = 'Table Grid'
+
+        # Set widths
+        for row in table.rows:
+            row.cells[0].width = column_widths[0]
+            row.cells[1].width = column_widths[1]
+
+        # Fill in the table 
+        for i, (heading, text) in enumerate(records.items()):
+            row_cells = table.rows[i].cells
+            row_cells[0].text = heading
+            row_cells[1].text = text
+
+        document.add_page_break()
+
+
+    document.save('Annual-Module-Quality-Enhancement-Reports.docx')
+
+    return jsonify({'result': 'success'}), 200
+
 
 if __name__ == '__main__':
     app.run(debug=True)
