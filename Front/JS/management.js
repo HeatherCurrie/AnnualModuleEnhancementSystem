@@ -6,9 +6,12 @@ function dropdownOptions() {
 
         data.forEach(option => {
             if (option.completed === "Completed"){
+                const deadlineDate = new Date(option.deadline);
+                const formattedDeadline = deadlineDate.toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' });
                 const opt = document.createElement('option');
+
                 opt.value = option.feedbackID;
-                opt.textContent = option.moduleName; 
+                opt.textContent = option.moduleName + ": " + formattedDeadline; 
                 select.appendChild(opt);
             }
         });
