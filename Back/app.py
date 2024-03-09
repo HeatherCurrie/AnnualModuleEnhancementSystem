@@ -7,6 +7,7 @@ from dotenv import load_dotenv
 from docx import Document
 from docx.shared import Inches, Pt, RGBColor
 from docx.enum.text import WD_ALIGN_PARAGRAPH
+from flask_mail import Mail, Message
 
 
 load_dotenv()
@@ -22,6 +23,15 @@ app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {
         }
     }
 }
+
+# EMAIL CONFIG
+app.config['MAIL_SERVER']='smtp.gmail.com'
+app.config['MAIL_PORT'] = 465
+app.config['MAIL_USERNAME'] = 'annualreviewsystem@gmail.com'
+app.config['MAIL_PASSWORD'] = os.getenv('PASSWORD')
+app.config['MAIL_USE_TLS'] = False
+app.config['MAIL_USE_SSL'] = True
+mail = Mail(app)
 
 db = SQLAlchemy(app)
 
@@ -216,7 +226,14 @@ def get_users():
 @app.route('/email-staff', methods=['POST'])
 def email_staff():
     data = request.get_json()
-    print(data)
+    
+    msg = Message(data['subject'],
+                  sender="annualreviewsystem@gmail.com",
+                  recipients=data['emails'],
+                  body=data['message'])
+
+    mail.send(msg)
+
     return jsonify({'result': 'success'}), 200
 
 

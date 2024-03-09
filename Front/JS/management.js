@@ -80,9 +80,11 @@ function emailStaff() {
     const select = document.getElementById("emailDropdown");
     const selectedVal = Array.from(select.selectedOptions).map(option => option.value);
     const messageVal = document.getElementById("message").value;
+    const subjectVal = document.getElementById("subject").value;
         
     const data = {
-        email: selectedVal,
+        subject: subjectVal,
+        emails: selectedVal,
         message: messageVal
     };
         
