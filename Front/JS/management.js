@@ -1,4 +1,5 @@
-function dropdownOptions() {
+// Get dropdown of all reviews
+function dropdownOptionsExport() {
     fetch('http://127.0.0.1:5000/get-all-reviews')
     .then(response => response.json())
     .then(data => {
@@ -19,6 +20,8 @@ function dropdownOptions() {
     .catch(error => console.error('Error fetching options:', error));
 }
 
+
+// When export button pressed
 function exportWord() {
     document.getElementById("exportButton").innerHTML = '<i class="fa-solid fa-gear fa-spin" id="spinner"></i>'
     const select = document.getElementById("feedbackDropdown");
@@ -52,6 +55,63 @@ function exportWord() {
     });
 }
 
+
+// Get dropdown of users
+function dropdownOptionsEmail() {
+    fetch('http://127.0.0.1:5000/get-users')
+    .then(response => response.json())
+    .then(data => {
+        const select = document.getElementById('emailDropdown');
+
+        data.forEach(option => {
+            const opt = document.createElement('option');
+            opt.value = option.userID;
+            opt.textContent = option.name;
+            select.appendChild(opt);
+        });
+    })
+    .catch(error => console.error('Error fetching options:', error));
+}
+
+
+// Email staff once email button pressed
+function emailStaff() {
+    document.getElementById("emailButton").innerHTML = '<i class="fa-solid fa-gear fa-spin" id="spinner"></i>'
+    const select = document.getElementById("emailDropdown");
+    const selectedVal = Array.from(select.selectedOptions).map(option => option.value);
+    const messageVal = document.getElementById("message").value;
+        
+    const data = {
+        userID: selectedVal,
+        message: messageVal
+    };
+        
+    // Send the data to the server using Fetch API
+    fetch('http://127.0.0.1:5000/email-staff', { 
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data)
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok: ' + response.statusText);
+        }
+        return response.json(); 
+    })
+    .then(data => {
+        //window.location.href = 'management.html';
+        console.log('Success:', data); 
+    })
+    .catch((error) => {
+        console.error('Error:', error);
+        document.getElementById("emailButton").innerHTML = 'Email Failed'; // Inform the user
+    });
+}
+
+
+// Display all incomplete reviews
 function displayIncompleteReviews() {
     fetch('http://127.0.0.1:5000/get-all-reviews')
         .then(response => response.json())  // Parse the JSON from the response
@@ -103,5 +163,6 @@ function displayIncompleteReviews() {
         });
 }
 // Call the function when the DOM is fully loaded
-document.addEventListener('DOMContentLoaded', dropdownOptions);
+document.addEventListener('DOMContentLoaded', dropdownOptionsExport);
+document.addEventListener('DOMContentLoaded', dropdownOptionsEmail);
 document.addEventListener('DOMContentLoaded', displayIncompleteReviews);

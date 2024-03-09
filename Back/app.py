@@ -199,13 +199,34 @@ def update_module_row():
         return jsonify({'result': 'failure', 'error': str(e)}), 500
 
 
+@app.route('/get-users') 
+def get_users():
+    all_users = text("""SELECT UserID, Email, Name
+                       FROM User""")
+
+    result = db.session.execute(all_users).mappings().all()
+
+    all_users = [{'userID': row['UserID'], 'email': row['Email'], 'name': row['Name']} for row in result]
+
+    return jsonify(all_users)
+
+
+# EMAIL ALL USERS SELECTED
+@app.route('/email-staff', methods=['POST'])
+def email_staff():
+    data = request.get_json()
+    print(data)
+    return jsonify({'result': 'success'}), 200
+
+
+# EXPORT ALL SELECTED REVIEWS
 @app.route('/export-word', methods=['POST'])
 def export_word():
     from sqlalchemy import text
     data = request.get_json()
     
     FeedbackIDs = data['feedbackID']  # First element
-    params = {"FeedbackID": tuple(FeedbackIDs)}  # Convert list to tuple for SQL IN clause compatibility
+    params = {"FeedbackID": tuple(FeedbackIDs)} 
 
     word_data = db.session.execute(text("""SELECT f.*, mf.*
                                     FROM feedback f
@@ -237,15 +258,13 @@ def export_word():
     paragraph.alignment = WD_ALIGN_PARAGRAPH.RIGHT
     paragraph.text = "Quality and Academic Standards Office, September 2016"
 
-    # Since we're replacing the text, let's format the existing run(s)
     for run in paragraph.runs:
         run.font.name = 'Calibri'
         run.font.color.rgb = RGBColor(0x36, 0x5F, 0x91)
 
-    # Add a new paragraph for the update notice
     paragraph2 = footer.add_paragraph("Updated February 2023")
     paragraph2.alignment = WD_ALIGN_PARAGRAPH.RIGHT
-    # Format the run in the new paragraph
+
     for run in paragraph2.runs:
         run.font.name = 'Calibri'
         run.font.color.rgb = RGBColor(0x36, 0x5F, 0x91)

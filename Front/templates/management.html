@@ -60,7 +60,18 @@
             <!-- AUTOMATICALLY EMAIL LECTURERS -->
 
             <div class="col-md-5 mx-auto bg-white shadow p-3 mb-5 bg-body-tertiary rounded">
-                
+                <h4>Send Emails</h4>
+                <form>
+                    <label class="form-label">Staff: </label>
+                        <select id="emailDropdown" class="form-select" multiple>
+ 
+                        </select>
+                    <div>
+                        <label class="form-label mt-3">Message:</label>
+                        <textarea class="form-control" id="message" rows="3" required></textarea>
+                    </div>
+                    <button onclick="emailStaff()" id="emailButton" type="button" class="btn dundeeBlue text-white mt-3">Email</button>
+                </form>
             </div>
         </div>
 
