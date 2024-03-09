@@ -199,6 +199,7 @@ def update_module_row():
         return jsonify({'result': 'failure', 'error': str(e)}), 500
 
 
+# GET USERS FOR EMAIL DROPDOWN
 @app.route('/get-users') 
 def get_users():
     all_users = text("""SELECT UserID, Email, Name

@@ -65,7 +65,7 @@ function dropdownOptionsEmail() {
 
         data.forEach(option => {
             const opt = document.createElement('option');
-            opt.value = option.userID;
+            opt.value = option.email;
             opt.textContent = option.name;
             select.appendChild(opt);
         });
@@ -82,7 +82,7 @@ function emailStaff() {
     const messageVal = document.getElementById("message").value;
         
     const data = {
-        userID: selectedVal,
+        email: selectedVal,
         message: messageVal
     };
         
