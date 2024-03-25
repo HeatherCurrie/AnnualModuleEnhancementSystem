@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
-    <link rel="stylesheet" href="../stylesheet.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='CSS/stylesheet.css') }}">
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
@@ -25,15 +25,15 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav">
                     <li class="nav-item">
-                        <a class="nav-link navbar-brand active" href="administration.html">Administration</a>
+                        <a class="nav-link navbar-brand active" href="{{ url_for('review_administration') }}">Administration</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link navbar-brand text-white" href="management.html">Review Management</a>
+                        <a class="nav-link navbar-brand text-white" href="{{ url_for('review_management') }}">Review Management</a>
                     </li>
                 </ul>
                 <ul class="navbar-nav ms-auto"> 
                     <li class="nav-item">
-                        <a class="nav-link navbar-brand text-white" href="login.html">Log Out</a>
+                        <a class="nav-link navbar-brand text-white" href="{{ url_for('home') }}">Log Out</a>
                     </li>
                 </ul>
             </div>
@@ -75,7 +75,7 @@
                             <th scope="col" class="table-warning">Module</th>
                             <th scope="col" class="table-warning">Module Lead</th>
                             <th scope="col" class="table-warning" style="width: 10%;">Credits</th>
-                            <th scope="col" class="table-warning" style="width: 10%;">Edit</th>
+                            <th scope="col" class="table-warning" style="width: 20%;">Actions</th>
                         </tr>
                     </thead>
                     <tbody id="moduleTable">
@@ -85,7 +85,7 @@
                 <div id="moduleSpinner" class="text-center" style="font-size: 2rem;">
                     <i class="fa-solid fa-gear fa-spin"></i>
                 </div>
-                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addModuleModal">Add</button>
+                <button type="button" class="btn dundeeBlue text-white" data-bs-toggle="modal" data-bs-target="#addModuleModal">Add</button>
             </div>
         </div>
         
@@ -129,6 +129,10 @@
 
     </div>
 
-    <script src="../JS/administration.js"></script>
+    <script type="text/javascript">
+        // Allow urls to work with JS
+        var administrationURL = "{{ url_for('review_administration') }}";
+    </script>
+    <script src="{{ url_for('static', filename='JS/administration.js') }}" defer></script>
 </body>
 </html>

@@ -46,7 +46,6 @@ function exportWord() {
         return response.json(); 
     })
     .then(data => {
-        //window.location.href = 'management.html';
         console.log('Success:', data); 
     })
     .catch((error) => {
@@ -103,7 +102,6 @@ function emailStaff() {
         return response.json(); 
     })
     .then(data => {
-        //window.location.href = 'management.html';
         console.log('Success:', data); 
     })
     .catch((error) => {

@@ -49,7 +49,7 @@ function submitReview() {
     })
     .then(data => {
         document.getElementById("reviewButton").innerHTML = 'Submit';
-        window.location.href = 'lecturerDashboard.html';
+        window.location.href = lecturerDashURL;
         console.log('Success:', data); 
     })
     .catch((error) => {

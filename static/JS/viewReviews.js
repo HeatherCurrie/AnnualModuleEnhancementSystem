@@ -25,7 +25,7 @@ function fetchAndDisplayReviews() {
                     // Allow row to be clicked + take to specific Feedback review by ID form                   
                     row.dataset.feedbackID = review.feedbackID; 
                     row.addEventListener('click', function() {
-                    window.location.href = `reviewModule.html?FeedbackID=${this.dataset.feedbackID}`;
+                    window.location.href = reviewModuleUrl + '?FeedbackID=' + encodeURIComponent(review.feedbackID);
                     });
                 } else if (review.completed === 'In-Progress') {
                     row = inProgressTable.insertRow();

@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
-    <link rel="stylesheet" href="../stylesheet.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='CSS/stylesheet.css') }}">
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
@@ -24,15 +24,15 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav">
                     <li class="nav-item">
-                        <a class="nav-link navbar-brand text-white" href="administration.html">Administration</a>
+                        <a class="nav-link navbar-brand text-white" href="{{ url_for('review_administration') }}">Administration</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link navbar-brand active" href="management.html">Review Management</a>
+                        <a class="nav-link navbar-brand active" href="{{ url_for('review_management') }}">Review Management</a>
                     </li>
                 </ul>
                 <ul class="navbar-nav ms-auto"> 
                     <li class="nav-item">
-                        <a class="nav-link navbar-brand text-white" href="login.html">Log Out</a>
+                        <a class="nav-link navbar-brand text-white" href="{{ url_for('home') }}">Log Out</a>
                     </li>
                 </ul>
             </div>
@@ -74,7 +74,7 @@
                         <label class="form-label mt-3">Email Content:</label>
                         <textarea class="form-control" id="message" rows="3" required></textarea>
                     </div>
-                    <button onclick="emailStaff()" id="emailButton" type="button" class="btn dundeeBlue text-white mt-3">Email</button>
+                    <button onclick="emailStaff()" id="emailButton" type="button" class="btn dundeeBlue text-white mt-3">Send Email</button>
                 </form>
             </div>
         </div>
@@ -102,6 +102,6 @@
             </div>       
         </div>
     </div>
-    <script src="../JS/management.js"></script>
+    <script src="{{ url_for('static', filename='JS/management.js') }}" defer></script>
 </body>
 </html>

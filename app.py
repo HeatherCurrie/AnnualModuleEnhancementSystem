@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, render_template
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import text
 import os
@@ -35,6 +35,27 @@ mail = Mail(app)
 
 db = SQLAlchemy(app)
 
+# FUNCTIONS TO NAVIGATE BETWEEN TEMPLATES
+# UPON STARTUP
+@app.route('/')
+def home():
+    return render_template('index.html')
+
+@app.route('/review-administration')
+def review_administration():
+    return render_template('administration.html')
+
+@app.route('/review-management')
+def review_management():
+    return render_template('management.html')
+
+@app.route('/lecturer-dashboard')
+def lecturer_dashboard():
+    return render_template('lecturerDashboard.html')
+
+@app.route('/review-module')
+def review_module():
+    return render_template('reviewModule.html')
 
 # DELEGATE REVIEWS
 @app.route('/delegate-reviews', methods=['POST'])
@@ -180,10 +201,10 @@ def add_module():
         return jsonify({'result': 'failure', 'error': str(e)}), 500
     
 
+# EDIT MODULES IN DATABASE
 @app.route('/update-module-row', methods=['POST'])
 def update_module_row():
     data = request.get_json()
-    print(data.get("moduleID"))  # Specifically check for ModuleID
 
     try:
         # FIND THE USERID OF THE MODULES LEAD LECTURER
@@ -200,6 +221,23 @@ def update_module_row():
         add_result = db.session.execute(text("""UPDATE Module
                                         SET ModuleCode = :ModuleCode, ModuleName = :ModuleName, ModuleLead = :ModuleLead, Credits = :Credits, UserID = :UserID
                                         WHERE ModuleID = :ModuleID"""), {"ModuleCode": data['moduleCode'], "ModuleName": data['moduleName'], "ModuleLead": data['moduleLead'], "Credits": data['credits'], "UserID": UserID, "ModuleID": data['moduleID']})
+
+        db.session.commit()
+
+        return jsonify({'result': 'success'}), 200
+
+    except Exception as e:
+        return jsonify({'result': 'failure', 'error': str(e)}), 500
+
+
+# DELETE MODULE ROW
+@app.route('/delete-module-row', methods=['POST'])
+def delete_module_row():
+    data = request.get_json()
+
+    try:
+        result = db.session.execute(text("""DELETE FROM Module
+                                            WHERE ModuleID = :ModuleID"""), {"ModuleID": data['moduleID']})
 
         db.session.commit()
 

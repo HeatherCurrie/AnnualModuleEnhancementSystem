@@ -1,45 +1,4 @@
-function displayModules() {
-    fetch('http://127.0.0.1:5000/get-modules')
-    .then(response => response.json())
-    .then(data => {
-        document.getElementById("moduleSpinner").remove()
-        const moduleTable = document.getElementById('moduleTable');
-
-        data.forEach((module, i) => {
-
-            // Create a table row and cells
-            let row;
-            row = moduleTable.insertRow();
-
-            // If row created
-            if (row) {
-                // Creating edit button
-                var button = document.createElement("button");
-                button.setAttribute("id", "editButton");
-                button.setAttribute("type", "button");
-                button.classList.add("btn", "dundeeBlue", "text-white"); 
-                button.textContent = "Edit Row";
-                button.dataset.rowIndex = i;
-                button.dataset.moduleID = module.moduleID;
-                button.addEventListener('click', editRow); 
-
-                const moduleCodeCell = row.insertCell(0);
-                const moduleNameCell = row.insertCell(1);
-                const moduleLeadCell = row.insertCell(2);
-                const creditsCell = row.insertCell(3);
-                const editCell = row.insertCell(4);
-
-                moduleCodeCell.textContent = module.moduleCode;
-                moduleNameCell.textContent = module.moduleName;
-                moduleLeadCell.textContent = module.moduleLead;
-                creditsCell.textContent = module.credits;
-                editCell.appendChild(button);
-            }
-        });
-    })
-    .catch(error => console.error('Error fetching options:', error));
-}
-
+// Get dropdown options for delegation
 function dropdownOptions() {
     fetch('http://127.0.0.1:5000/get-modules')
     .then(response => response.json())
@@ -56,6 +15,8 @@ function dropdownOptions() {
     .catch(error => console.error('Error fetching options:', error));
 }
 
+
+// When user clicks delegate button
 function delegate() {
     document.getElementById("delegateButton").innerHTML = '<i class="fa-solid fa-gear fa-spin" id="spinner"></i>'
     const select = document.getElementById("delegationDropdown");
@@ -83,7 +44,6 @@ function delegate() {
         return response.json(); 
     })
     .then(data => {
-        //window.location.href = 'adminDashboard.html';
         console.log('Success:', data); 
     })
     .catch((error) => {
@@ -91,6 +51,63 @@ function delegate() {
     });
 }
 
+
+// Display all modules in database in table
+function displayModules() {
+    fetch('http://127.0.0.1:5000/get-modules')
+    .then(response => response.json())
+    .then(data => {
+        document.getElementById("moduleSpinner").remove()
+        const moduleTable = document.getElementById('moduleTable');
+
+        data.forEach((module, i) => {
+
+            // Create a table row and cells
+            let row;
+            row = moduleTable.insertRow();
+
+            // If row created
+            if (row) {
+                // Creating edit button
+                var editButton = document.createElement("button");
+                editButton.setAttribute("id", "editButton");
+                editButton.setAttribute("type", "button");
+                editButton.classList.add("btn", "dundeeBlue", "text-white"); 
+                editButton.textContent = "Edit Row";
+                editButton.dataset.rowIndex = i;
+                editButton.dataset.moduleID = module.moduleID;
+                editButton.addEventListener('click', editRow); 
+
+                // Creating delete button
+                var deleteButton = document.createElement("button");
+                deleteButton.setAttribute("id", "deleteButton");
+                deleteButton.setAttribute("type", "button");
+                deleteButton.classList.add("btn", "dundeeBlue", "text-white", "ms-3"); 
+                deleteButton.textContent = "Delete Row";
+                deleteButton.dataset.rowIndex = i;
+                deleteButton.dataset.moduleID = module.moduleID;
+                deleteButton.addEventListener('click', deleteRow); 
+
+                const moduleCodeCell = row.insertCell(0);
+                const moduleNameCell = row.insertCell(1);
+                const moduleLeadCell = row.insertCell(2);
+                const creditsCell = row.insertCell(3);
+                const actionCell = row.insertCell(4);
+
+                moduleCodeCell.textContent = module.moduleCode;
+                moduleNameCell.textContent = module.moduleName;
+                moduleLeadCell.textContent = module.moduleLead;
+                creditsCell.textContent = module.credits;
+                actionCell.appendChild(editButton);
+                actionCell.appendChild(deleteButton);
+            }
+        });
+    })
+    .catch(error => console.error('Error fetching options:', error));
+}
+
+
+// When add button clicked
 function addModule() {
     document.getElementById("addModuleButton").innerHTML = '<i class="fa-solid fa-gear fa-spin" id="spinner"></i>'
     
@@ -107,7 +124,6 @@ function addModule() {
     };
         
     // Send the data to the server using Fetch API
-    
     fetch('http://127.0.0.1:5000/add-module', { 
         method: 'POST',
         headers: {
@@ -122,13 +138,14 @@ function addModule() {
         return response.json(); 
     })
     .then(data => {
-        window.location.href = 'administration.html';
+        window.location.href = administrationURL;
         console.log('Success:', data); 
     })
     .catch((error) => {
         console.error('Error:', error);
     });
 }
+
 
 // CALLED WHEN EDIT ROW IS CLICKED
 function editRow(event) {
@@ -167,8 +184,10 @@ function editRow(event) {
     editButton.textContent = "Save Row";
     editButton.removeEventListener('click', editRow);
     editButton.addEventListener('click', saveRow);
-  }
+}
 
+
+// Save row in table once edited
 function saveRow(event) {
     const button = event.target;
     const row = button.closest('tr');
@@ -190,6 +209,34 @@ function saveRow(event) {
     })
     .then(response => response.json())
     .then(data => {
+        window.location.href = administrationURL;
+        console.log('Success:', data);
+    })
+    .catch((error) => {
+        console.error('Error:', error);
+    });
+}
+
+
+// Function to delete a row from the table
+function deleteRow(event) {
+    const button = event.target;
+    const moduleIDVal = button.dataset.moduleID;
+  
+    const data = {
+        moduleID: moduleIDVal,
+    };
+
+    fetch('http://127.0.0.1:5000/delete-module-row', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+    })
+    .then(response => response.json())
+    .then(data => {
+        window.location.href = administrationURL;
         console.log('Success:', data);
     })
     .catch((error) => {
