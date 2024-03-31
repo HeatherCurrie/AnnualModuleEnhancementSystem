@@ -30,7 +30,7 @@
             <div class="bg-white m-4 shadow p-3 mb-4 bg-body-tertiary rounded">
                 <div class="mb-3">
                     <label class="form-label">Academic Year:</label>
-                    <select id="academicYear" class="form-select">
+                    <select id="academicYear" class="form-select" value="{{ review.AcademicYear }}">
                         <option selected disabled hidden>Select Academic Year</option>
                         <option value="22/23">2022/2023</option>
                         <option value="21/22">2021/2022</option>
@@ -39,7 +39,7 @@
                 </div>
                 <div class="mb-3">
                     <label class="form-label">School:</label>
-                    <select class="form-select" id="school">
+                    <select class="form-select" id="school" value="{{ review.School }}">
                         <option selected disabled hidden>Select School</option>
                         <option value="Science and Engineering">Science and Engineering</option>
                         <option value="Business">Business</option>
@@ -50,44 +50,44 @@
             <div class="bg-white m-4 shadow p-3 mb-4 bg-body-tertiary rounded">
                 <div class="mb-3">
                     <label class="form-label">Student numbers, Achievement and Progression:</label>
-                    <textarea class="form-control" id="studentInfo" rows="3"></textarea>
+                    <textarea class="form-control" id="studentInfo" rows="3">{{ review.StudentInfo }}</textarea>
                 </div>
                 <div class="mb-3">
                     <label class="form-label">Evaluation of the Operation of the Module:</label>
-                    <textarea class="form-control" id="moduleEval" rows="3"></textarea>
+                    <textarea class="form-control" id="moduleEval" rows="3">{{ review.ModuleEval }}</textarea>
                 </div>
                 <div class="mb-3">
                     <label class="form-label">Evaluation of Approach to Teaching, Assessment and Feedback:</label>
-                    <textarea class="form-control" id="teachingEval" rows="3"></textarea>
+                    <textarea class="form-control" id="teachingEval" rows="3">{{ review.TeachingEval }}</textarea>
                 </div>
                 <div class="mb-3">
                     <label class="form-label">Inclusive Nature:</label>
-                    <input type="text" class="form-control" id="inclusiveNature">
+                    <input type="text" class="form-control" id="inclusiveNature" value="{{ review.InclusiveNature }}">
                 </div>
             </div>
             <div class="bg-white m-4 shadow p-3 mb-4 bg-body-tertiary rounded">
                 <div class="mb-3">
                     <label class="form-label">Past Changes:</label>
-                    <textarea class="form-control" id="pastChanges" rows="3"></textarea>
+                    <textarea class="form-control" id="pastChanges" rows="3">{{ review.PastChanges }}</textarea>
                 </div>
                 <div class="mb-3">
                     <label class="form-label">Future Changes:</label>
-                    <textarea class="form-control" id="futureChanges" rows="3"></textarea>
+                    <textarea class="form-control" id="futureChanges" rows="3">{{ review.FutureChanges }}</textarea>
                 </div>
             </div>
             <div class="bg-white m-4 shadow p-3 mb-4 bg-body-tertiary rounded">
                 <div class="mb-3">
                     <label class="form-label">Other (Not Required):</label>
-                    <input type="text" class="form-control" id="other">
+                    <input type="text" class="form-control" id="other" value="{{ review.Other }}">
                 </div>
                 <label class="form-label">Author:</label>
                 <div class="input-group mb-3">
-                    <input type="text" class="form-control" placeholder="First name..." id="firstName">
-                    <input type="text" class="form-control" placeholder="Last Name..." id="lastName">
+                    <input type="text" class="form-control" placeholder="First name..." id="firstName" value="{{ review.Author }}">
+                    <input type="text" class="form-control" placeholder="Last Name..." id="lastName" value="{{ review.Author }}">
                   </div>
                 <div class="mb-3">
                     <label class="form-label">Date:</label>
-                    <input type="date" class="form-control" id="date">
+                    <input type="date" class="form-control" id="date" value="{{ review.Date }}">
                 </div>
             </div>
             <button type="button" onclick="submitReview()" id="reviewButton" class="btn text-white dundeeBlue ms-4 mb-3">Submit</button>
@@ -99,5 +99,6 @@
         var lecturerDashURL = "{{ url_for('lecturer_dashboard') }}";
       </script>
     <script src="{{ url_for('static', filename='JS/moduleReview.js') }}" defer></script>
+    <script src="{{ url_for('static', filename='JS/loadDropdowns.js') }}" defer></script>
 </body>
 </html>

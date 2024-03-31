@@ -14,10 +14,6 @@ body {
     background-color: #4365e2;
 }
 
-a:hover {
-    color: black !important;
-} 
-
 button:hover {
     background-color: darkblue;
 } 

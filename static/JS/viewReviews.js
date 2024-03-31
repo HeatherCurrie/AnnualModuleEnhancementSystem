@@ -25,10 +25,16 @@ function fetchAndDisplayReviews() {
                     // Allow row to be clicked + take to specific Feedback review by ID form                   
                     row.dataset.feedbackID = review.feedbackID; 
                     row.addEventListener('click', function() {
-                    window.location.href = reviewModuleUrl + '?FeedbackID=' + encodeURIComponent(review.feedbackID);
+                        window.location.href = reviewModuleUrl + '?FeedbackID=' + encodeURIComponent(review.feedbackID);
                     });
                 } else if (review.completed === 'In-Progress') {
                     row = inProgressTable.insertRow();
+
+                    // Allow row to be clicked + take to specific Feedback review by ID form                   
+                    row.dataset.feedbackID = review.feedbackID; 
+                    row.addEventListener('click', function() {
+                        window.location.href = `/edit-review?FeedbackID=${review.feedbackID}`;
+                    });
                 } else if (review.completed === 'Completed') {
                     row = completedTable.insertRow();
                 }

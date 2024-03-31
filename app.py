@@ -91,10 +91,8 @@ def delegate_reviews():
 def submit_review():
     data = request.get_json()
     UserID = 1
-    Completed = "Completed"
 
     try:
-        # Assuming 'FeedbackID' is part of the data payload from the client
         FeedbackID = data['FeedbackID']
         
         # Update feedback record
@@ -107,11 +105,69 @@ def submit_review():
         db.session.execute(text("""UPDATE ModuleFeedback
                                    SET StudentInfo = :StudentInfo, 
                                     ModuleEval = :ModuleEval, InclusiveNature = :InclusiveNature, 
+                                    PastChanges = :PastChanges, FutureChanges = :FutureChanges, TeachingEval = :TeachingEval
+                                   WHERE FeedbackID = :FeedbackID"""), {"FeedbackID": FeedbackID, "StudentInfo": data['studentInfo'], "ModuleEval": data['moduleEval'], "InclusiveNature": data['inclusiveNature'], "PastChanges": data['pastChanges'], "FutureChanges": data['futureChanges'], "TeachingEval": data['teachingEval']})
+
+        db.session.commit()
+        return jsonify({'result': 'success'}), 200
+    except Exception as e:
+        return jsonify({'result': 'failure', 'error': str(e)}), 500
+
+
+# When module review is saved
+@app.route('/save-review-endpoint', methods=['POST'])
+def save_review():
+    data = request.get_json()
+    UserID = 1
+
+    # As date cannot be empty
+    if data['date'] == "":
+        data['date'] = "2000-01-01"
+
+    try:
+        FeedbackID = data['FeedbackID']
+        
+        # Update feedback record
+        db.session.execute(text("""UPDATE feedback 
+                                   SET UserID = :UserID, AcademicYear = :AcademicYear, School = :School, 
+                                    Other = :Other, Date = :Date, Completed = :Completed, Author = :Author
+                                   WHERE FeedbackID = :FeedbackID"""), {"UserID": UserID, "AcademicYear": data['academicYear'], "School": data['school'],"Other": data['other'], "Date": data['date'], "Completed": "In-Progress", "Author": data['author'], "FeedbackID": FeedbackID})
+
+        # Update ModuleFeedback records associated with the given FeedbackID
+        db.session.execute(text("""UPDATE ModuleFeedback
+                                   SET StudentInfo = :StudentInfo, 
+                                    ModuleEval = :ModuleEval, InclusiveNature = :InclusiveNature, 
                                     PastChanges = :PastChanges, FutureChanges = :FutureChanges
                                    WHERE FeedbackID = :FeedbackID"""), {"FeedbackID": FeedbackID, "StudentInfo": data['studentInfo'], "ModuleEval": data['moduleEval'], "InclusiveNature": data['inclusiveNature'], "PastChanges": data['pastChanges'], "FutureChanges": data['futureChanges']})
 
         db.session.commit()
         return jsonify({'result': 'success'}), 200
+    except Exception as e:
+        return jsonify({'result': 'failure', 'error': str(e)}), 500
+
+
+# CALLED WHEN USER WANTS TO OPEN AN IN-PROGRESS REVIEW
+@app.route('/edit-review')
+def edit_review():
+    feedbackID = request.args.get('FeedbackID')
+    if not feedbackID:
+        return "FeedbackID is required", 400
+
+    try:
+        feedbackID = int(feedbackID) 
+        review_query = text("""SELECT f.*, mf.*
+                               FROM feedback f
+                               JOIN ModuleFeedback mf ON f.FeedbackID = mf.FeedbackID
+                               WHERE f.FeedbackID = :FeedbackID""")
+        
+        review = db.session.execute(review_query, {'FeedbackID': feedbackID}).fetchone()
+
+        if review:
+            return render_template('editReview.html', review=review)
+        else:
+            return "Review not found", 404
+    except ValueError:
+        return "Invalid FeedbackID", 400
     except Exception as e:
         return jsonify({'result': 'failure', 'error': str(e)}), 500
 
@@ -284,13 +340,13 @@ def export_word():
     FeedbackIDs = data['feedbackID']  # First element
     params = {"FeedbackID": tuple(FeedbackIDs)} 
 
-    word_data = db.session.execute(text("""SELECT f.*, mf.*
+    word_data = db.session.execute(text("""SELECT f.*, mf.*, m.*
                                     FROM feedback f
                                     JOIN ModuleFeedback mf ON f.FeedbackID = mf.FeedbackID
+                                    JOIN Module m ON mf.ModuleID = m.ModuleID
                                     WHERE f.FeedbackID IN :FeedbackID OR mf.FeedbackID IN :FeedbackID
                                     """),
                                     params).mappings().fetchall()
-
 
     # Create Document
     document = Document()
@@ -302,7 +358,7 @@ def export_word():
     header = document.sections[0].header
     paragraph = header.paragraphs[0]
     run = paragraph.add_run()
-    run.add_picture('../Images/Dundee_Logo-Word_Doc.jpg')
+    run.add_picture('Images/Dundee_Logo-Word_Doc.jpg')
 
     column_widths = [Inches(2.5), Inches(4.5)]
 
@@ -330,20 +386,30 @@ def export_word():
         title = document.add_paragraph('Annual Module Quality Enhancement Report', style='Title')
         title.alignment = WD_ALIGN_PARAGRAPH.CENTER
 
+        # Display multiple fields in module details cell
+        module_details = "Module Code: " + row.get("ModuleCode", "None") + \
+                     "\nModule Name: " + row.get("ModuleName", "None") + \
+                     "\nCredits: " + str(row.get("Credits", "None"))
+        
+        # Display date and author
+
+        author_and_date = "Author: " + row.get("Author", "None") + \
+                     "\nDate: " + str(row.get("Date", "None"))
+
         # Define the titles and variables
         records = {
-            "1. Module details": row.get("AcademicYear", "None"),
+            "1. Module details": module_details,
             "2. Academic Year": row.get("AcademicYear", "None"),
             "3. School": row.get("School", "None"),
-            "4. Module Leader/Organiser": row.get("AcademicYear", "None"),
+            "4. Module Leader/Organiser": row.get("ModuleLead", "None"),
             "5. Student numbers, achievement and progression": row.get("StudentInfo", "None"),
             "6. Evaluation of the operation of the module": row.get("ModuleEval", "None"),
-            "7. Evaluation of approach to teaching, assessment and feedback": row.get("ModuleEval", "None"),
+            "7. Evaluation of approach to teaching, assessment and feedback": row.get("TeachingEval", "None"),
             "8. Inclusive nature of the curriculum": row.get("InclusiveNature", "None"),
             "9. Effect of past changes": row.get("PastChanges", "None"),
             "10. Proposed future changes": row.get("FutureChanges", "None"),
             "11. Other comments": row.get("Other", "None"),
-            "12. Author and date": row.get("Author", "None"),
+            "12. Author and date": author_and_date
         }
 
         table = document.add_table(rows=len(records), cols=2)
