@@ -1,6 +1,6 @@
 // Get dropdown of all reviews
 function dropdownOptionsExport() {
-    fetch('http://127.0.0.1:5000/get-all-reviews')
+    fetch('/get-all-reviews')
     .then(response => response.json())
     .then(data => {
         const select = document.getElementById('feedbackDropdown');
@@ -32,7 +32,7 @@ function exportWord() {
     };
         
     // Send the data to the server using Fetch API
-    fetch('http://127.0.0.1:5000/export-word', { 
+    fetch('/export-word', { 
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -57,7 +57,7 @@ function exportWord() {
 
 // Get dropdown of users
 function dropdownOptionsEmail() {
-    fetch('http://127.0.0.1:5000/get-users')
+    fetch('/get-users')
     .then(response => response.json())
     .then(data => {
         const select = document.getElementById('emailDropdown');
@@ -88,7 +88,7 @@ function emailStaff() {
     };
         
     // Send the data to the server using Fetch API
-    fetch('http://127.0.0.1:5000/email-staff', { 
+    fetch('/email-staff', { 
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -113,7 +113,7 @@ function emailStaff() {
 
 // Display all incomplete reviews
 function displayIncompleteReviews() {
-    fetch('http://127.0.0.1:5000/get-all-reviews')
+    fetch('/get-all-reviews')
         .then(response => response.json())  // Parse the JSON from the response
         .then(data => {
             document.getElementById("incompleteSpinner").remove()

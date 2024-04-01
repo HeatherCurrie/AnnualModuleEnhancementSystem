@@ -30,7 +30,7 @@ function delegate() {
         
     // Send the data to the server using Fetch API
     
-    fetch('http://127.0.0.1:5000/delegate-reviews', { 
+    fetch('/delegate-reviews', { 
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -54,7 +54,7 @@ function delegate() {
 
 // Display all modules in database in table
 function displayModules() {
-    fetch('http://127.0.0.1:5000/get-modules')
+    fetch('/get-modules')
     .then(response => response.json())
     .then(data => {
         document.getElementById("moduleSpinner").remove()
@@ -124,7 +124,7 @@ function addModule() {
     };
         
     // Send the data to the server using Fetch API
-    fetch('http://127.0.0.1:5000/add-module', { 
+    fetch('/add-module', { 
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -200,7 +200,7 @@ function saveRow(event) {
         data[input.name] = input.value;
     });
 
-    fetch('http://127.0.0.1:5000/update-module-row', {
+    fetch('/update-module-row', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -227,7 +227,7 @@ function deleteRow(event) {
         moduleID: moduleIDVal,
     };
 
-    fetch('http://127.0.0.1:5000/delete-module-row', {
+    fetch('/delete-module-row', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',

@@ -52,7 +52,7 @@ function submitReview() {
 
     } else {
         // Send the data to the server using Fetch API
-        fetch('http://127.0.0.1:5000/submit-review-endpoint', { 
+        fetch('/submit-review-endpoint', { 
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -114,7 +114,7 @@ function saveReview() {
     console.log(data);
 
     // Send the data to the server using Fetch API
-    fetch('http://127.0.0.1:5000/save-review-endpoint', { 
+    fetch('/save-review-endpoint', { 
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',

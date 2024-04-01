@@ -1,5 +1,5 @@
 function fetchAndDisplayReviews() {
-    fetch('http://127.0.0.1:5000/get-user-reviews')
+    fetch('/get-user-reviews')
         .then(response => response.json())  // Parse the JSON from the response
         .then(data => {
             const toCompleteTable = document.getElementById('toCompleteTable')
