@@ -1,6 +1,7 @@
-from flask import Flask, request, jsonify, render_template
+from flask import Flask, request, jsonify, render_template, session, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import text
+from flask_mysqldb import MySQL
 import os
 from flask_cors import CORS
 from dotenv import load_dotenv
@@ -8,12 +9,14 @@ from docx import Document
 from docx.shared import Inches, Pt, RGBColor
 from docx.enum.text import WD_ALIGN_PARAGRAPH
 from flask_mail import Mail, Message
+from functools import wraps
 
 
 load_dotenv()
 app = Flask(__name__)
 CORS(app)
 app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('SQLALCHEMY_DATABASE_URI')
+app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
 SSL_CA_PATH = os.path.join(os.getcwd(), os.getenv('SSL_CA_PATH'))
 
 app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {
@@ -24,6 +27,7 @@ app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {
     }
 }
 
+
 # EMAIL CONFIG
 app.config['MAIL_SERVER']='smtp.gmail.com'
 app.config['MAIL_PORT'] = 465
@@ -32,8 +36,21 @@ app.config['MAIL_PASSWORD'] = os.getenv('PASSWORD')
 app.config['MAIL_USE_TLS'] = False
 app.config['MAIL_USE_SSL'] = True
 mail = Mail(app)
+mysql = MySQL(app)
 
 db = SQLAlchemy(app)
+
+
+# LOGIN REQUIRED TO VIEW PAGES 
+def login_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if 'userID' not in session:
+            # Redirect to login page if user is not logged in
+            return redirect(url_for('home'))
+        return f(*args, **kwargs)
+    return decorated_function
+
 
 # FUNCTIONS TO NAVIGATE BETWEEN TEMPLATES
 # UPON STARTUP
@@ -41,32 +58,106 @@ db = SQLAlchemy(app)
 def home():
     return render_template('index.html')
 
+@app.route('/register')
+def register():
+    return render_template('register.html')
+
 @app.route('/review-administration')
+@login_required
 def review_administration():
     return render_template('administration.html')
 
 @app.route('/review-management')
+@login_required
 def review_management():
     return render_template('management.html')
 
 @app.route('/lecturer-dashboard')
+@login_required
 def lecturer_dashboard():
     return render_template('lecturerDashboard.html')
 
 @app.route('/review-module')
+@login_required
 def review_module():
     return render_template('reviewModule.html')
+
+@app.route('/owner')
+@login_required
+def owner():
+    return render_template('owner.html')
+
+
+@app.route('/login', methods=['POST'])
+def login():
+    email = request.form.get('email')
+    password = request.form.get('password')
+    
+    # Execute a raw SQL query using SQLAlchemy
+    getUser = text("SELECT UserID, Type, Email FROM User WHERE Email = :Email AND Password = :Password")
+    result = db.session.execute(getUser, {'Email': email, 'Password': password})
+    user = result.fetchone()
+
+    if user:
+        session['userID'] = user.UserID
+
+        if (user.Type == "Admin"): 
+            return redirect(url_for('review_administration'))
+        elif (user.Type == "Owner"):
+            return redirect(url_for('owner'))
+        else:
+            return redirect(url_for('review_administration'))
+    else:
+        return redirect(url_for('home'))
+
+
+# REGISTER
+@app.route('/register-user', methods=["POST"])
+def register_user():
+    try:
+        name = request.form.get('name') 
+        email = request.form.get('email')
+        password = request.form.get('password')
+
+        existing_user = db.session.execute(text("""SELECT email 
+                                FROM User 
+                                WHERE email = :email
+                                """), {"email": email}).fetchone()
+
+        if (existing_user is None):
+            # Insert user
+            db.session.execute(text("""INSERT INTO User (Name, Email, Password, Type)
+                                VALUES (:Name, :Email, :Password, :Type)"""), {"Name": name, "Email": email, "Password": password, "Type": "Lecturer"})
+            db.session.commit()
+            return redirect(url_for('home'))
+        else: 
+            return redirect(url_for('register'))
+
+    except Exception as e:
+        return jsonify({'result': 'failure', 'error': str(e)}), 500
+
+
+# LOG OUT
+@app.route('/logout')
+def logout():
+    session.pop('userID', None)
+    return redirect(url_for('home'))
+
 
 # DELEGATE REVIEWS
 @app.route('/delegate-reviews', methods=['POST'])
 def delegate_reviews():
     try:
         data = request.get_json()
-        #userID = session.get('user_id') ONCE LOGIN IS SETUP
-        UserID = 1  
         Completed = "To-Complete"
-        
+
         for element in data['moduleID']:
+            result = db.session.execute(text("""SELECT UserID 
+                                            From Module 
+                                            WHERE ModuleID = :ModuleID
+                                            """), {"ModuleID": element})
+            UserID = result.scalar()
+
             # Insert into Feedback table
             feedback_result = db.session.execute(text("""INSERT INTO Feedback (UserID, Deadline, Completed)
                                                     VALUES (:UserID, :Deadline, :Completed)"""), {"UserID": UserID, "Deadline": data['deadline'], "Completed": Completed})
@@ -175,8 +266,7 @@ def edit_review():
 # GET USER REVIEW - USED TO DISPLAY TABLES WITH REVIEWS
 @app.route('/get-user-reviews')
 def get_reviews():
-    #userID = session.get('user_id') ONCE LOGIN IS SETUP
-    UserID = 1
+    UserID = session.get('userID')
 
     try:
         # Join Feedback with ModuleFeedback, then ModuleFeedback with Module
@@ -219,12 +309,12 @@ def get_all_reviews():
 # GET MODULES FOR REVIEW DELEGATION
 @app.route('/get-modules')
 def get_modules():
-    all_modules = text("""SELECT ModuleID, ModuleName, ModuleLead, ModuleCode, Credits
+    all_modules = text("""SELECT ModuleID, UserID, ModuleName, ModuleLead, ModuleCode, Credits
                        FROM Module""")
 
     result = db.session.execute(all_modules).mappings().all()
 
-    all_modules = [{'moduleID': row['ModuleID'], 'moduleName': row['ModuleName'], 'moduleLead': row['ModuleLead'], 'moduleCode': row['ModuleCode'], 'credits': row['Credits']} for row in result]
+    all_modules = [{'moduleID': row['ModuleID'], 'UserID': row['UserID'], 'moduleName': row['ModuleName'], 'moduleLead': row['ModuleLead'], 'moduleCode': row['ModuleCode'], 'credits': row['Credits']} for row in result]
 
     return jsonify(all_modules)
 
@@ -306,12 +396,12 @@ def delete_module_row():
 # GET USERS FOR EMAIL DROPDOWN
 @app.route('/get-users') 
 def get_users():
-    all_users = text("""SELECT UserID, Email, Name
+    all_users = text("""SELECT UserID, Email, Name, Type
                        FROM User""")
 
     result = db.session.execute(all_users).mappings().all()
 
-    all_users = [{'userID': row['UserID'], 'email': row['Email'], 'name': row['Name']} for row in result]
+    all_users = [{'userID': row['UserID'], 'email': row['Email'], 'name': row['Name'], 'type': row['Type']} for row in result]
 
     return jsonify(all_users)
 
@@ -432,6 +522,24 @@ def export_word():
     document.save('Annual-Module-Quality-Enhancement-Reports.docx')
 
     return jsonify({'result': 'success'}), 200
+
+
+# Change user to admin or lecturer
+@app.route('/change-user-permissions', methods=['POST'])
+def user_to_admin():
+    data = request.get_json()
+
+    try:
+        update_user = db.session.execute(text("""UPDATE User
+                                        SET Type = :Type
+                                        WHERE UserID = :UserID"""), {"UserID": data['userID'], "Type": data['type']})
+
+        db.session.commit()
+
+        return jsonify({'result': 'success'}), 200
+
+    except Exception as e:
+        return jsonify({'result': 'failure', 'error': str(e)}), 500
 
 
 if __name__ == '__main__':

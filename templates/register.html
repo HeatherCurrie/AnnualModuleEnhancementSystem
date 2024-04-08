@@ -22,8 +22,12 @@
 
   <div class="container containerLogin mt-5 bg-white border shadow p-3 mb-5 bg-body-tertiary rounded">
     <div class="login-box mb-3">
-      <h2 class="text-center mb-4 mt-2">Sign In</h2>
-      <form method="POST" action="/login">
+      <h2 class="text-center mb-4 mt-2">Register</h2>
+      <form method="POST" action="/register-user">
+        <div class="mb-3">
+          <label class="form-label">Full Name:</label>
+          <input type="text" class="form-control" name="name" id="name" placeholder="Enter your fullname..." required>
+        </div>
         <div class="mb-3">
           <label class="form-label">Email:</label>
           <input type="text" class="form-control" name="email" id="email" placeholder="Enter your username..." required>
@@ -32,14 +36,11 @@
           <label class="form-label">Password:</label>
           <input type="password" class="form-control" name="password" id="password" placeholder="Enter your password..." required>
         </div>
-        <div class="d-flex mb-3 align-items-center justify-content-between">
-          <div class="form-check">
-            <input type="checkbox" class="form-check-input" onclick="passwordVisibility()">
-            <label>Show password</label>
-          </div>
-          <a href="{{ url_for('register') }}">Don't have an account?</a>
+        <div class="mb-3 form-check">
+          <input type="checkbox" class="form-check-input" onclick="passwordVisibility()">
+          <label>Show password</label>
         </div>
-        <button type="submit" class="btn w-100 dundeeBlue text-white">Login</button>
+        <button type="submit" class="btn w-100 dundeeBlue text-white">Sign Up</button>
       </form>
     </div>
   </div>
