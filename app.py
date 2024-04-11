@@ -106,7 +106,7 @@ def login():
         elif (user.Type == "Owner"):
             return redirect(url_for('owner'))
         else:
-            return redirect(url_for('review_administration'))
+            return redirect(url_for('lecturer_dashboard'))
     else:
         return redirect(url_for('home'))
 
@@ -131,7 +131,7 @@ def register_user():
             db.session.commit()
             return redirect(url_for('home'))
         else: 
-            return redirect(url_for('register'))
+            return jsonify({'result': 'failure', 'error': 'Email already exists'}), 409  # HTTP 409 Conflict
 
     except Exception as e:
         return jsonify({'result': 'failure', 'error': str(e)}), 500
@@ -382,6 +382,19 @@ def delete_module_row():
     data = request.get_json()
 
     try:
+        confilct = db.session.execute(text("""DELETE FROM ModuleFeedback
+                            WHERE ModuleID = :ModuleID
+                            """), {'ModuleID': data['moduleID']})
+
+        conflictMF = db.session.execute(text("""DELETE FROM feedback
+                            WHERE FeedbackID IN (
+                                SELECT FeedbackID
+                                FROM ModuleFeedback
+                                WHERE ModuleID = :ModuleID
+                            )
+                            """), {'ModuleID': data['moduleID']})
+
+
         result = db.session.execute(text("""DELETE FROM Module
                                             WHERE ModuleID = :ModuleID"""), {"ModuleID": data['moduleID']})
 

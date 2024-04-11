@@ -18,12 +18,12 @@
     </div>
   </nav>
 
-  <!--lOGIN CONTAINER-->
+  <!--Register CONTAINER-->
 
   <div class="container containerLogin mt-5 bg-white border shadow p-3 mb-5 bg-body-tertiary rounded">
     <div class="login-box mb-3">
       <h2 class="text-center mb-4 mt-2">Register</h2>
-      <form method="POST" action="/register-user">
+      <form method="POST" action="/register-user" id="registrationForm">
         <div class="mb-3">
           <label class="form-label">Full Name:</label>
           <input type="text" class="form-control" name="name" id="name" placeholder="Enter your fullname..." required>
@@ -44,5 +44,7 @@
       </form>
     </div>
   </div>
+
+  <script src="{{ url_for('static', filename='JS/register.js') }}" defer></script>
 </body>
 </html>
