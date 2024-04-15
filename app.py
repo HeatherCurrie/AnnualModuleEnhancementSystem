@@ -11,7 +11,7 @@ from docx.enum.text import WD_ALIGN_PARAGRAPH
 from flask_mail import Mail, Message
 from functools import wraps
 import tempfile
-
+from azure.storage.blob import BlobServiceClient
 
 load_dotenv()
 app = Flask(__name__)
@@ -27,6 +27,15 @@ app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {
         }
     }
 }
+
+# BLOB CONGIG
+app.config['AZURE_STORAGE_CONNECTION_STRING'] = os.getenv('AZURE_STORAGE_CONNECTION_STRING')
+azure_storage_connection_string = app.config['AZURE_STORAGE_CONNECTION_STRING']
+container_name = "worddocs"
+
+# Authenticate with Azure Blob Storage
+blob_service_client = BlobServiceClient.from_connection_string(azure_storage_connection_string)
+container_client = blob_service_client.get_container_client(container_name)
 
 
 # EMAIL CONFIG
@@ -534,11 +543,18 @@ def export_word():
         document.add_page_break()
 
 
+    temp_folder = tempfile.gettempdir()
     word_output_path = os.path.join(temp_folder, "Annual-Module-Quality-Enhancement-Reports.docx")
-    #print("Word document will be saved to:", word_output_path)
     document.save(word_output_path)
 
-    return send_file(word_output_path, as_attachment=True)
+    # Upload the Word document to Azure Blob Storage
+    blob_name = "Annual-Module-Quality-Enhancement-Reports.docx"
+    with open(word_output_path, "rb") as file:
+        blob_client = container_client.get_blob_client(blob_name)
+        blob_client.upload_blob(file, overwrite=True)
+
+    # Return success response
+    return {'result': 'success'}
 
 
 # Change user to admin or lecturer
