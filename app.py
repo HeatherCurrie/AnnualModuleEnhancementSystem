@@ -29,12 +29,18 @@ app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {
 }
 
 # BLOB CONGIG
-app.config['AZURE_STORAGE_CONNECTION_STRING'] = os.getenv('AZURE_STORAGE_CONNECTION_STRING')
-azure_storage_connection_string = app.config['AZURE_STORAGE_CONNECTION_STRING']
-container_name = "worddocs"
+account_url = os.getenv('BLOB_URL')
+
+# Your Azure Storage account access key
+account_key = os.getenv('AZURE_STORAGE_CONNECTION_STRING')
 
 # Authenticate with Azure Blob Storage
-blob_service_client = BlobServiceClient.from_connection_string(azure_storage_connection_string)
+blob_service_client = BlobServiceClient(account_url=account_url, credential=account_key)
+
+# Define blob container name
+container_name = "worddocs"
+
+# Get or create the container client
 container_client = blob_service_client.get_container_client(container_name)
 
 
