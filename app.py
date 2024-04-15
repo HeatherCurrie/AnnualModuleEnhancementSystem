@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify, render_template, session, redirect, url_for
+from flask import Flask, request, jsonify, render_template, session, redirect, url_for, send_file
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import text
 from flask_mysqldb import MySQL
@@ -10,6 +10,7 @@ from docx.shared import Inches, Pt, RGBColor
 from docx.enum.text import WD_ALIGN_PARAGRAPH
 from flask_mail import Mail, Message
 from functools import wraps
+import tempfile
 
 
 load_dotenv()
@@ -439,6 +440,7 @@ def email_staff():
 def export_word():
     from sqlalchemy import text
     data = request.get_json()
+    temp_folder = tempfile.gettempdir()
     
     FeedbackIDs = data['feedbackID']  # First element
     params = {"FeedbackID": tuple(FeedbackIDs)} 
@@ -532,9 +534,11 @@ def export_word():
         document.add_page_break()
 
 
-    document.save('Annual-Module-Quality-Enhancement-Reports.docx')
+    word_output_path = os.path.join(temp_folder, "Annual-Module-Quality-Enhancement-Reports.docx")
+    #print("Word document will be saved to:", word_output_path)
+    document.save(word_output_path)
 
-    return jsonify({'result': 'success'}), 200
+    return send_file(word_output_path, as_attachment=True)
 
 
 # Change user to admin or lecturer
