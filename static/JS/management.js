@@ -49,7 +49,7 @@ function exportWord() {
         console.log('Success:', data); 
     })
     .catch((error) => {
-        console.error('Error:', error);
+        console.error('Error exporting document:', error);
         document.getElementById("exportButton").innerHTML = 'Export Failed'; // Inform the user
     });
 }

@@ -209,7 +209,7 @@ def submit_review():
 @app.route('/save-review-endpoint', methods=['POST'])
 def save_review():
     data = request.get_json()
-    UserID = 1
+    UserID = session.get('userID')
 
     # As date cannot be empty
     if data['date'] == "":
