@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify, render_template, session, redirect, url_for, send_file
+from flask import Flask, request, jsonify, render_template, session, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import text
 from flask_mysqldb import MySQL
@@ -10,8 +10,8 @@ from docx.shared import Inches, Pt, RGBColor
 from docx.enum.text import WD_ALIGN_PARAGRAPH
 from flask_mail import Mail, Message
 from functools import wraps
-import tempfile
-from azure.storage.blob import BlobServiceClient
+import bcrypt
+
 
 load_dotenv()
 app = Flask(__name__)
@@ -27,21 +27,6 @@ app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {
         }
     }
 }
-
-# BLOB CONGIG
-account_url = os.getenv('BLOB_URL')
-
-# Your Azure Storage account access key
-account_key = os.getenv('AZURE_STORAGE_CONNECTION_STRING')
-
-# Authenticate with Azure Blob Storage
-blob_service_client = BlobServiceClient(account_url=account_url, credential=account_key)
-
-# Define blob container name
-container_name = "worddocs"
-
-# Get or create the container client
-container_client = blob_service_client.get_container_client(container_name)
 
 
 # EMAIL CONFIG
@@ -109,21 +94,29 @@ def login():
     email = request.form.get('email')
     password = request.form.get('password')
     
-    # Execute a raw SQL query using SQLAlchemy
-    getUser = text("SELECT UserID, Type, Email FROM User WHERE Email = :Email AND Password = :Password")
-    result = db.session.execute(getUser, {'Email': email, 'Password': password})
+    getUser = text("SELECT UserID, Type, Email, Password FROM User WHERE Email = :Email")
+    result = db.session.execute(getUser, {'Email': email})
     user = result.fetchone()
 
     if user:
-        session['userID'] = user.UserID
+        hashed_password_from_db = user.Password.encode('utf-8')
 
-        if (user.Type == "Admin"): 
-            return redirect(url_for('review_administration'))
-        elif (user.Type == "Owner"):
-            return redirect(url_for('owner'))
+        # Check if the password matches the hashed password from the database
+        if bcrypt.checkpw(password.encode('utf-8'), hashed_password_from_db):
+            # Password is correct, set the user's session
+            session['userID'] = user.UserID
+
+            if user.Type == "Admin": 
+                return redirect(url_for('review_administration'))
+            elif user.Type == "Owner":
+                return redirect(url_for('owner'))
+            else:
+                return redirect(url_for('lecturer_dashboard'))
         else:
-            return redirect(url_for('lecturer_dashboard'))
+            # Password is incorrect
+            return redirect(url_for('home'))
     else:
+        # User with the provided email doesn't exist
         return redirect(url_for('home'))
 
 
@@ -139,6 +132,8 @@ def register_user():
                                 FROM User 
                                 WHERE email = :email
                                 """), {"email": email}).fetchone()
+        
+        password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
 
         if (existing_user is None):
             # Insert user
@@ -455,7 +450,6 @@ def email_staff():
 def export_word():
     from sqlalchemy import text
     data = request.get_json()
-    temp_folder = tempfile.gettempdir()
     
     FeedbackIDs = data['feedbackID']  # First element
     params = {"FeedbackID": tuple(FeedbackIDs)} 
@@ -549,15 +543,7 @@ def export_word():
         document.add_page_break()
 
 
-    temp_folder = tempfile.gettempdir()
-    word_output_path = os.path.join(temp_folder, "Annual-Module-Quality-Enhancement-Reports.docx")
-    document.save(word_output_path)
-
-    # Upload the Word document to Azure Blob Storage
-    blob_name = "Annual-Module-Quality-Enhancement-Reports.docx"
-    with open(word_output_path, "rb") as file:
-        blob_client = container_client.get_blob_client(blob_name)
-        blob_client.upload_blob(file, overwrite=True)
+    document.save("Annual-Module-Quality-Enhancement-Reports.docx")
 
     # Return success response
     return {'result': 'success'}

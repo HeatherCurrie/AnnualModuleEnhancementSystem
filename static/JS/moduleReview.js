@@ -128,7 +128,7 @@ function saveReview() {
         return response.json(); 
     })
     .then(data => {
-        document.getElementById("saveButton").innerHTML = 'Submit';
+        document.getElementById("saveButton").innerHTML = 'Saved';
         window.location.href = lecturerDashURL;
         console.log('Success:', data); 
     })

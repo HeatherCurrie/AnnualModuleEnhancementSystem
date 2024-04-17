@@ -82,7 +82,7 @@ function displayModules() {
                 var deleteButton = document.createElement("button");
                 deleteButton.setAttribute("id", "deleteButton");
                 deleteButton.setAttribute("type", "button");
-                deleteButton.classList.add("btn", "dundeeBlue", "text-white", "ms-3"); 
+                deleteButton.classList.add("btn", "dundeeBlue", "text-white", "ms-1"); 
                 deleteButton.textContent = "Delete Row";
                 deleteButton.dataset.rowIndex = i;
                 deleteButton.dataset.moduleID = module.moduleID;
