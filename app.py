@@ -161,13 +161,27 @@ def delegate_reviews():
     try:
         data = request.get_json()
         Completed = "To-Complete"
+        recipient_emails = []
+        deadline = data['deadline']
 
         for element in data['moduleID']:
             result = db.session.execute(text("""SELECT UserID 
                                             From Module 
                                             WHERE ModuleID = :ModuleID
                                             """), {"ModuleID": element})
+            
             UserID = result.scalar()
+            
+            email_query = db.session.execute(text(""" SELECT Email
+                                                  FROM User
+                                                  WHERE UserID = :UserID
+                                                    """), {"UserID": UserID}) 
+            
+            recipient_email = email_query.fetchone()[0]  # Assuming you only expect one email address per module ID
+            recipient_emails.append(recipient_email)
+
+            
+            email = email_query.fetchone()
 
             # Insert into Feedback table
             feedback_result = db.session.execute(text("""INSERT INTO Feedback (UserID, Deadline, Completed)
@@ -182,6 +196,14 @@ def delegate_reviews():
             
             db.session.commit()
 
+
+        """msg = Message('Module Review Due',
+                  sender="annualreviewsystem@gmail.com",
+                  recipients=recipient_emails,
+                  body="You have been delegated a module review, please login to complete it before the deadline: " + deadline)
+
+        #mail.send(msg)"""
+
         return jsonify({'result': 'success'}), 200
 
     except Exception as e:
@@ -192,16 +214,15 @@ def delegate_reviews():
 @app.route('/submit-review-endpoint', methods=['POST'])
 def submit_review():
     data = request.get_json()
-    UserID = 1
 
     try:
         FeedbackID = data['FeedbackID']
         
         # Update feedback record
         db.session.execute(text("""UPDATE feedback 
-                                   SET UserID = :UserID, AcademicYear = :AcademicYear, School = :School, 
+                                   SET AcademicYear = :AcademicYear, School = :School, 
                                     Other = :Other, Date = :Date, Completed = :Completed, Author = :Author
-                                   WHERE FeedbackID = :FeedbackID"""), {"UserID": UserID, "AcademicYear": data['academicYear'], "School": data['school'],"Other": data['other'], "Date": data['date'], "Completed": "Completed", "Author": data['author'], "FeedbackID": FeedbackID})
+                                   WHERE FeedbackID = :FeedbackID"""), {"AcademicYear": data['academicYear'], "School": data['school'],"Other": data['other'], "Date": data['date'], "Completed": "Completed", "Author": data['author'], "FeedbackID": FeedbackID})
 
         # Update ModuleFeedback records associated with the given FeedbackID
         db.session.execute(text("""UPDATE ModuleFeedback
@@ -239,8 +260,8 @@ def save_review():
         db.session.execute(text("""UPDATE ModuleFeedback
                                    SET StudentInfo = :StudentInfo, 
                                     ModuleEval = :ModuleEval, InclusiveNature = :InclusiveNature, 
-                                    PastChanges = :PastChanges, FutureChanges = :FutureChanges
-                                   WHERE FeedbackID = :FeedbackID"""), {"FeedbackID": FeedbackID, "StudentInfo": data['studentInfo'], "ModuleEval": data['moduleEval'], "InclusiveNature": data['inclusiveNature'], "PastChanges": data['pastChanges'], "FutureChanges": data['futureChanges']})
+                                    PastChanges = :PastChanges, FutureChanges = :FutureChanges, TeachingEval = :TeachingEval
+                                   WHERE FeedbackID = :FeedbackID"""), {"FeedbackID": FeedbackID, "StudentInfo": data['studentInfo'], "ModuleEval": data['moduleEval'], "InclusiveNature": data['inclusiveNature'], "PastChanges": data['pastChanges'], "FutureChanges": data['futureChanges'], "TeachingEval": data['teachingEval']})
 
         db.session.commit()
         return jsonify({'result': 'success'}), 200
@@ -302,13 +323,13 @@ def get_reviews():
 def get_all_reviews():
     try:
         # Join Feedback with ModuleFeedback, then ModuleFeedback with Module
-        all_reviews = text("""SELECT mo.ModuleName, mo.ModuleLead, f.Deadline, f.Completed, f.FeedbackID
+        all_reviews = text("""SELECT mo.ModuleName, mo.ModuleLead, mo.ModuleCode, f.Deadline, f.Completed, f.FeedbackID
                         FROM Feedback f
                         JOIN ModuleFeedback mf ON f.FeedbackID = mf.FeedbackID
                         JOIN Module mo ON mf.ModuleID = mo.ModuleID""")
         result = db.session.execute(all_reviews).mappings().all()
 
-        all_reviews = [{'moduleName': row['ModuleName'], 'deadline': row['Deadline'], 'completed': row['Completed'], 'moduleLead': row['ModuleLead'], 'feedbackID': row['FeedbackID']} for row in result]
+        all_reviews = [{'moduleName': row['ModuleName'], 'moduleCode': row['ModuleCode'], 'deadline': row['Deadline'], 'completed': row['Completed'], 'moduleLead': row['ModuleLead'], 'feedbackID': row['FeedbackID']} for row in result]
 
         return jsonify(all_reviews)
 
@@ -321,7 +342,8 @@ def get_all_reviews():
 @app.route('/get-modules')
 def get_modules():
     all_modules = text("""SELECT ModuleID, UserID, ModuleName, ModuleLead, ModuleCode, Credits
-                       FROM Module""")
+                       FROM Module
+                       ORDER BY ModuleCode""")
 
     result = db.session.execute(all_modules).mappings().all()
 
@@ -421,7 +443,8 @@ def delete_module_row():
 @app.route('/get-users') 
 def get_users():
     all_users = text("""SELECT UserID, Email, Name, Type
-                       FROM User""")
+                        FROM User
+                        ORDER BY Name""")
 
     result = db.session.execute(all_users).mappings().all()
 
@@ -545,7 +568,6 @@ def export_word():
 
     document.save("Annual-Module-Quality-Enhancement-Reports.docx")
 
-    # Return success response
     return {'result': 'success'}
 
 

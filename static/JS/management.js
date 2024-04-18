@@ -12,7 +12,7 @@ function dropdownOptionsExport() {
                 const opt = document.createElement('option');
 
                 opt.value = option.feedbackID;
-                opt.textContent = option.moduleName + ": " + formattedDeadline; 
+                opt.textContent = option.moduleCode + ": " + option.moduleName + " - " + formattedDeadline; 
                 select.appendChild(opt);
             }
         });
@@ -46,11 +46,11 @@ function exportWord() {
         return response.json(); 
     })
     .then(data => {
-        console.log('Success:', data); 
+        console.log('Success:', data);
+        window.location.href = managementURL; 
     })
     .catch((error) => {
         console.error('Error exporting document:', error);
-        document.getElementById("exportButton").innerHTML = 'Export Failed'; // Inform the user
     });
 }
 
@@ -65,7 +65,7 @@ function dropdownOptionsEmail() {
         data.forEach(option => {
             const opt = document.createElement('option');
             opt.value = option.email;
-            opt.textContent = option.name;
+            opt.textContent = option.name + ": " + option.email;
             select.appendChild(opt);
         });
     })
@@ -103,6 +103,7 @@ function emailStaff() {
     })
     .then(data => {
         console.log('Success:', data); 
+        window.location.href = managementURL;
     })
     .catch((error) => {
         console.error('Error:', error);

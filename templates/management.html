@@ -103,5 +103,9 @@
         </div>
     </div>
     <script src="{{ url_for('static', filename='JS/management.js') }}" defer></script>
+    <script type="text/javascript">
+        // Allow urls to work with JS
+        var managementURL = "{{ url_for('review_management') }}";
+    </script>
 </body>
 </html>

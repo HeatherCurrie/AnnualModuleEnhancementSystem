@@ -43,8 +43,6 @@ function submitReview() {
             break; // Stop once found a null
         }
     }   
-    
-    console.log(hasNull);
 
     if (hasNull) {
         document.getElementById("reviewButton").innerHTML = 'Submit';

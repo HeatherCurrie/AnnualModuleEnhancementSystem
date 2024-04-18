@@ -8,7 +8,7 @@ function dropdownOptions() {
         data.forEach(option => {
             const opt = document.createElement('option');
             opt.value = option.moduleID;
-            opt.textContent = option.moduleName; 
+            opt.textContent = option.moduleCode + ": " + option.moduleName; 
             select.appendChild(opt);
         });
     })
