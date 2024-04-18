@@ -109,8 +109,6 @@ function saveReview() {
         date: dateVal
     };
 
-    console.log(data);
-
     // Send the data to the server using Fetch API
     fetch('/save-review-endpoint', { 
         method: 'POST',

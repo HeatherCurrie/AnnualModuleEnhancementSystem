@@ -286,7 +286,10 @@ def edit_review():
         review = db.session.execute(review_query, {'FeedbackID': feedbackID}).fetchone()
 
         if review:
-            return render_template('editReview.html', review=review)
+            school_value = review[3]  # As school is in 3rd column
+            year_value = review[2]  
+            print(school_value)
+            return render_template('editReview.html', review=review, school_value=school_value, year_value=year_value)
         else:
             return "Review not found", 404
     except ValueError:
@@ -458,12 +461,12 @@ def get_users():
 def email_staff():
     data = request.get_json()
     
-    msg = Message(data['subject'],
+    """msg = Message(data['subject'],
                   sender="annualreviewsystem@gmail.com",
                   recipients=data['emails'],
                   body=data['message'])
 
-    mail.send(msg)
+    mail.send(msg)"""
 
     return jsonify({'result': 'success'}), 200
 
