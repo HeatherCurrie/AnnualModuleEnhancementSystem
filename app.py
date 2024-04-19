@@ -114,10 +114,10 @@ def login():
                 return redirect(url_for('lecturer_dashboard'))
         else:
             # Password is incorrect
-            return jsonify({'result': 'failure', 'error': 'Incorrect Password'}), 409 
+            return redirect(url_for('home', error='Incorrect email or password'))
     else:
         # User with the provided email doesn't exist
-        return jsonify({'result': 'failure', 'error': 'Email does not have an account'}), 409  
+        return redirect(url_for('home', error='User not found'))
 
 
 # REGISTER

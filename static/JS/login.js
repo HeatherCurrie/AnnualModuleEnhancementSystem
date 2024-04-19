@@ -8,20 +8,15 @@ function passwordVisibility() {
   }
 }
 
-  document.getElementById("loginForm").onsubmit = async function(event) {
-    event.preventDefault();
-    let formData = new FormData(event.target);
-    let response = await fetch('/login', {
-        method: 'POST',
-        body: formData
-    });
+// Function to parse URL query parameters
+function getQueryParam(name) {
+  const params = new URLSearchParams(window.location.search);
+  return params.get(name);
+}
 
-    if (response.status === 409) {
-        const data = await response.json();
-        alert(data.error); 
-    } else if (response.ok) {
-        window.location.href = '/';
-    } else {
-        alert('Incorrect Email or Password.');
-    }
+// Check if there's an error message in the URL
+const errorMessage = getQueryParam('error');
+if (errorMessage) {
+  // Display the error message to the user
+  alert(errorMessage);
 }
