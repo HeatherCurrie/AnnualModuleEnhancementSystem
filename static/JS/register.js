@@ -12,6 +12,6 @@ document.getElementById("registrationForm").onsubmit = async function(event) {
     } else if (response.ok) {
         window.location.href = '/';
     } else {
-        alert('An error occurred. Please try again.');
+        alert('Email already exists.');
     }
 }

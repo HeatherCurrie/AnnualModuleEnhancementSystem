@@ -114,10 +114,10 @@ def login():
                 return redirect(url_for('lecturer_dashboard'))
         else:
             # Password is incorrect
-            return redirect(url_for('home'))
+            return jsonify({'result': 'failure', 'error': 'Incorrect Password'}), 409 
     else:
         # User with the provided email doesn't exist
-        return redirect(url_for('home'))
+        return jsonify({'result': 'failure', 'error': 'Email does not have an account'}), 409  
 
 
 # REGISTER
@@ -142,7 +142,7 @@ def register_user():
             db.session.commit()
             return redirect(url_for('home'))
         else: 
-            return jsonify({'result': 'failure', 'error': 'Email already exists'}), 409  # HTTP 409 Conflict
+            return jsonify({'result': 'failure', 'error': 'Email already exists'}), 409  
 
     except Exception as e:
         return jsonify({'result': 'failure', 'error': str(e)}), 500
@@ -288,7 +288,6 @@ def edit_review():
         if review:
             school_value = review[3]  # As school is in 3rd column
             year_value = review[2]  
-            print(school_value)
             return render_template('editReview.html', review=review, school_value=school_value, year_value=year_value)
         else:
             return "Review not found", 404
